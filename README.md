@@ -50,7 +50,7 @@ You will need an `.shsh2` blob from your device. For simplicity sake, you can us
 
 In order to restore and boot your device, you need to obtain keys for your devices target versions iBoot, iBEC, iBSS, and LLB. One source `futurerestore` looks to for keys is [The Apple Wiki](https://theapplewiki.com/wiki/Firmware_Keys/15.x), so you can check there for keys. If the link for your device & version combination is red, you will need to do extra work.
 
-A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Criptam), though at the time of writing it's broken because [ipsw.me](https://ipsw.me/) is incompetent ~~(as always)~~. Assuming a fix isn't pushed yet (please check the repository), here's a [fork](https://github.com/dleovl/Criptam) I provided where you can input data via a `.json` file. You can use it like so:
+A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Criptam), though at the time of writing it's broken. Assuming a fix isn't pushed yet (please check the repository), here's a [fork](https://github.com/dleovl/Criptam) (`develop` branch) I provided where you can input data via a `.json` file. You can use it like so:
 
 1. Install Poetry by running `curl -sSL https://install.python-poetry.org | python3 -`.
 2. Clone the fork mentioned above using `git clone https://github.com/dleovl/Criptam --branch develop`.
@@ -63,11 +63,11 @@ When you select a version on [ipsw.me](https://ipsw.me/), you will see the build
 
 Now, we need to supply the `fw.json`. You can get this by running `wget https://api.ipsw.me/v4/device/{deviceid} -O fw.json`, where `{deviceid}` is the device identifier of your device (ie. iPad7,1), just remember to not include the `{}`. A file named your device identifier should be saved. Ensure you're `cd`'d into the directory where the `fw.json` fie is saved. Please remember you need to update this file if a new version comes out for your device and you wish to obtain keys for it.
 
-Running a command like `wget https://api.ipsw.me/v4/device/iPad7,1 -O fw.json` will give me the firmware data for the iPad Pro 2 (12.9-inch, WiFi).
+For example, running a command like `wget https://api.ipsw.me/v4/device/iPad7,1 -O fw.json` will give me the firmware data for the iPad Pro 2 (12.9-inch, WiFi).
 
 4. Run the following command: `criptam -d {deviceid} -b {buildid}`, where `{deviceid}` is your device identifier (ie. iPad7,1), and `{buildid}` is the build identifier of the version you want keys of (ie. `19H12` for iPadOS 15.7), just remember to not include the `{}`.
 
-Running a command like `criptam -d iPad7,1 -b 19H12` will give me the keys for the iPad Pro 2 (12.9-inch, WiFi) on iPadOS 15.7.
+For example, running a command like `criptam -d iPad7,1 -b 19H12` will give me the keys for the iPad Pro 2 (12.9-inch, WiFi) on iPadOS 15.7.
 
 Take a note of these keys; they will be used to decrypt iBEC and iBSS in the boot process. Though, now we need to set up a server for `futurerestore` to reference for the restore process. Remember, `ivkey` stands for the IV concatenated with the Key; if IV were `123` and the Key were `456` the `ivkey` would be `123456`. Here's a layout of what you should save:
 
