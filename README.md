@@ -7,7 +7,7 @@ Additionally, this guide **does not take into account devices that have kpp**; r
 
 This guide is officially certified as **bootloop free** assuming you do everything correctly, don't ban me for something that's out of my hands! Remember, this is a ***tethered boot***, not a dualboot. All data on the device will be ***LOST*** as a restore takes place.
 
-This guide is assuming you set up your `$PATH` environment variable to contain a directory which you have access to and can place binaries into. Please edit `~/.bash_profile` or `~/.zshrc`, whichever exists, to add your working directory into `$PATH`. For example, you can add `export PATH="$PATH:/Users/myusername/Desktop/ios15tether"`.
+This guide is assuming you set up your `$PATH` environment variable to contain a directory which you have access to and can place binaries into. Please edit `~/.bash_profile` or `~/.zshrc`, whichever exists, to add your working directory into `$PATH`. For example, you can add `export PATH="$PATH:/Users/myusername/Desktop/ios15tether"` (replace `/Users/myusername/Desktop/ios15tether` with your working directory; you can determine this by typing `pwd`).
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -28,13 +28,13 @@ This guide is assuming you set up your `$PATH` environment variable to contain a
 - [`gaster`](https://github.com/0x7ff/gaster) - clone repository, run `make`, and take the binary made.
 - `pyimg4` - install the ***latest version*** of [Python](https://www.python.org/downloads/), then run `pip3 install pyimg4` (you may need to restart your terminal in order to run the command).
 - [`iBoot64patcher`](https://github.com/Cryptiiiic/iBoot64Patcher) - clone repository, run `build.sh`, and take the binary made.
-- [`Kernel64patcher`](https://github.com/edwin170/Kernel64Patcher) - clone repository, run `gcc Kernel64Patcher.c -o Kernel64Patcher`, and take the binary made.
+- [`Kernel64patcher`](https://github.com/edwin170/Kernel64Patcher) - download the [Darwin](https://github.com/edwin170/Kernel64Patcher/blob/master/Kernel64Patcher_Darwin) file, rename it to `Kernel64Patcher`, and take the binary downloaded (don't forget to run `chmod +x Kernel64Patcher`).
 - [`img4tool`](https://github.com/tihmstar/img4tool) - download archive from releases, extract, and take the binary located at `{extracted archive directory}/usr/local/bin/img4tool`.
 - [`img4`](https://github.com/xerub/img4lib) - ***recursively*** clone repository, run `make -C lzfse && make`, and take the binary made.
-- [`ldid`](https://github.com/ProcursusTeam/ldid) - download binary from releases, and rename binary to `ldid`.
-<!-- TODO: is ProcursusTeam ldid necessary, because this like already exists on MacOS unlike literally every other requirement -->
 - [`restored_external64_patcher`](https://github.com/iSuns9/restored_external64patcher) - clone repository, run `make`, and take the binary made.
 - [`asr64_patcher`](https://github.com/iSuns9/asr64_patcher) - clone repository, run `make`, and take the binary made.
+- [Homebrew](https://brew.sh/) - if you do not already have homebrew on your system, run `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` in a terminal (I'm so sorry for this).
+- [`sshpass`] - if you do not already have `sshpass` on your system, run `brew tap esolitos/ipa && brew install sshpass` in a terminal.
 
 ***Note: Please make sure you are using the repositories listed above. Using outdated / modified forks / binaries can and will make it so this guide doesn't work. These tools MUST be under the $PATH environment variable.***
 
@@ -112,7 +112,81 @@ Firmware keys for J120AP 19H12:
 ```
 
 You can now serve these keys on your `localhost` server for `futurerestore`.
-<!-- TODO: set up futurerestore server for restore -->
+
+1. Install prerequisites with `pip3 install requests pyquery Flask`.
+2. Download `proxy.py` with ***`wget https://raw.githubusercontent.com/dleovl/ios15tether/main/proxy.py`***. Ensure this is run in your working directory.
+3. In another terminal window, type `python3 proxy.py`.
+
+Now, you need to make the `.json` file for the restore. In your working directory, make a file named `{deviceid}+{buildid}.json`, where `{deviceid}` is the device identifier (ie. `iPad7,1`) and `{buildid}` is the build identifier for the version you're going to (ie. `19H12`), just remember to not include the `{}`. For example, the `iPad7,1` with the `19H12` build identifier should have its `.json` file named `iPad7,1+19H12.json`.
+
+Open the `.json` file and structure it as follows:
+```json
+{
+    "identifier": "",
+    "buildid": "",
+    "codename": "",
+    "keys": [
+        {
+            "image": "iBEC",
+            "filename": "",
+            "date": "",
+            "iv": "",
+            "key": "",
+            "kbag": ""
+        },
+        {
+            "image": "iBoot",
+            "filename": "",
+            "date": "",
+            "iv": "",
+            "key": "",
+            "kbag": ""
+        },
+        {
+            "image": "iBSS",
+            "filename": "",
+            "date": "",
+            "iv": "",
+            "key": "",
+            "kbag": ""
+        },
+        {
+            "image": "LLB",
+            "filename": "",
+            "date": "",
+            "iv": "",
+            "key": "",
+            "kbag": ""
+        },
+        {
+            "image": "SEPFirmware",
+            "filename": "",
+            "date": "",
+            "iv": "Unknown",
+            "key": "Unknown",
+            "kbag": ""
+        }
+    ]
+}
+```
+
+- In the `identifier` key, add the device identifier (ie. `iPad7,1`).
+- In the `buildid` key, add the build identifier (ie. `19H12`).
+- In the `codename` key, add the codename for the version you're going to. For iOS 15, you can use [Wikipedia](https://en.wikipedia.org/wiki/IOS_15#Release_history) for codenames (ie. `SkySecuritySydney` for 15.7).
+
+The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you need to input the `filename` (which is the name of the corresponding file in the `.ipsw`), the `iv` & `key` of the file (which you can get from your results with Criptam).
+
+- iBEC `.im4p` is located in `extipsw/Firmware/dfu`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
+- iBSS `.im4p` is located in `extipsw/Firmware/dfu`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
+- iBoot `.im4p` is located in `extipsw/Firmware/all_flash`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
+- LLB `.im4p` is located in `extipsw/Firmware/all_flash`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
+- SEPFirmware `.im4p` is located in `extipsw/Firmware/all_flash`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
+
+You do ***NOT*** need to fill `SEPFirmware` `iv` or `key`. You do not need to fill any `kbag` keys.
+
+***Please ensure the files you pick are related to your devices `BoardConfig`***.
+
+You can now restore, hooray! Don't forget to keep `python3 proxy.py` running.
 
 ## Restoring
 ***[Back to Table of Contents](#table-of-contents)***
