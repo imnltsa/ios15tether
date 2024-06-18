@@ -38,12 +38,25 @@ This guide is assuming you set up your `$PATH` environment variable to contain a
 
 ***Note: Please make sure you are using the repositories listed above. Using outdated / modified forks / binaries can and will make it so this guide doesn't work. These tools MUST be under the $PATH environment variable.***
 
-You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager 64-bit`. Then, follow 
-
 You will need an `.shsh2` blob from your device. For simplicity sake, you can use [blobsaver](https://github.com/airsquared/blobsaver) (download and install the `.dmg` from releases). Connect your device, read the ECID from the device, and press "Go". Once finished, take the `.shsh2` with the latest i(Pad)OS version listed from the directory listed (may be `~/Blobs`), copy it to your working directory, and rename it to `shsh.shsh2`. ***You cannot use a blob dumped from your device (aka. an 'onboard' blob)***. Blobs from blobsaver work just fine.
 
 ## Obtaining Activation Records
 ***[Back to Table of Contents](#table-of-contents)***
+
+You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager 64-bit` from Sileo / Zebra.
+
+1. Open Filza.
+2. Press "Mount points" from the favorites menu (may need to press the star icon).
+3. Open `/var/mobile/Documents` and make a folder named `Activation` (you can favorite this directory for ease of access). Ensure you are doing this on the ***root filesystem***.
+5. Press the search button, select `Root`, and search for `activation_records`. There may be two folders; press the arrow on the one that has `drwxrwxrwx` (make sure the `internal` directory exists next to the `activation_records` directory)
+6. From `activation_records`, copy `activation_record.plist` to `/var/mobile/Documents/Activation`.
+7. From `internal` (next to `activation_records`), copy `data_ark.plist` to `/var/mobile/Documents/Activation`.
+8. Press the search button, select `Root` and search for `FairPlay`. Press the arrow on the folder, then copy the `FairPlay` directory ***itself*** and copy it to `/var/mobile/Documents/Activation`.
+9. From `/var/wireless/Library/Preferences`, copy `com.apple.commcenter.device_specific_nobackup.plist` to `/var/mobile/Documents/Activation`.
+10. Open `/var/mobile/Documents` and select "Create ZIP" on the `Activation` folder. Hold down the `.zip`, press "Open in", and select "Save to Files".
+11. Upload the `.zip` to your computer by either going to [tmpfiles.org](https://tmpfiles.org/) and opening the download link on your computer or using FTP / SSH / SFTP. Save the `.zip` to your working directory and extract it. Make sure the `Activation` folder is inside of your working directory (if the files spill into your working directory, run `mkdir Activation && cp activation_record.plist com.apple.commcenter.device_specific_nobackup.plist data_ark.plist FairPlay Activation`).
+
+If you encounter a permission issue, please try changing the Owner and Group of the file / directory and use `NewTerm 3 Beta` from [Chariz](https://chariz.com/) to `sudo cp` the file / directory into the `Activation` directory. If you know what you're doing, and it still doesn't copy, please let me know via Discord ([@dleovl](https://discord.com/users/772340930694611014)) and I'll go through troubleshooting & give more instructions if they still fail to copy.
 
 ## Firmware Keys
 ***[Back to Table of Contents](#table-of-contents)***
