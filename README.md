@@ -28,7 +28,7 @@ This guide is assuming you set up your `$PATH` environment variable to contain a
 - [`gaster`](https://github.com/0x7ff/gaster) - clone repository, run `make`, and take the binary made.
 - `pyimg4` - install the ***latest version*** of [Python](https://www.python.org/downloads/), then run `pip3 install pyimg4` (you may need to restart your terminal in order to run the command).
 - [`iBoot64patcher`](https://github.com/Cryptiiiic/iBoot64Patcher) - clone repository, run `build.sh`, and take the binary made.
-- [`Kernel64patcher`](https://github.com/edwin170/Kernel64Patcher) - download the [Darwin](https://github.com/edwin170/Kernel64Patcher/blob/master/Kernel64Patcher_Darwin) file, rename it to `Kernel64Patcher`, and take the binary downloaded (don't forget to run `chmod +x Kernel64Patcher`).
+- [`Kernel64patcher`](https://github.com/edwin170/Kernel64Patcher) - run `wget https://github.com/edwin170/Kernel64Patcher/raw/master/Kernel64Patcher_Darwin -O Kernel64Patcher && chmod +x Kernel64Patcher`, and take the binary downloaded.
 - [`img4tool`](https://github.com/tihmstar/img4tool) - download archive from releases, extract, and take the binary located at `{extracted archive directory}/usr/local/bin/img4tool`.
 - [`img4`](https://github.com/xerub/img4lib) - ***recursively*** clone repository, run `make -C lzfse && make`, and take the binary made.
 - [`restored_external64_patcher`](https://github.com/iSuns9/restored_external64patcher) - clone repository, run `make`, and take the binary made.
@@ -55,6 +55,8 @@ You will need to back up your ***activation records*** in order to activate & us
 9. From `/var/wireless/Library/Preferences`, copy `com.apple.commcenter.device_specific_nobackup.plist` to `/var/mobile/Documents/Activation`.
 10. Open `/var/mobile/Documents` and select "Create ZIP" on the `Activation` folder. Hold down the `.zip`, press "Open in", and select "Save to Files".
 11. Upload the `.zip` to your computer by either going to [tmpfiles.org](https://tmpfiles.org/) and opening the download link on your computer or using FTP / SSH / SFTP. Save the `.zip` to your working directory and extract it. Make sure the `Activation` folder is inside of your working directory (if the files spill into your working directory, run `mkdir Activation && cp activation_record.plist com.apple.commcenter.device_specific_nobackup.plist data_ark.plist FairPlay Activation`).
+
+Once the `Activation` folder is on your computer, `chmod` it with `sudo chmod -R 755 Activation` (assuming you're in the directory that has the `Activation` folder).
 
 If you encounter a permission issue, please try changing the Owner and Group of the file / directory and use `NewTerm 3 Beta` from [Chariz](https://chariz.com/) to `sudo cp` the file / directory into the `Activation` directory. If you know what you're doing, and it still doesn't copy, please let me know via Discord ([@dleovl](https://discord.com/users/772340930694611014)) and I'll go through troubleshooting & give more instructions if they still fail to copy.
 
@@ -309,8 +311,113 @@ Since (besides the root filesystem trustcache) there is the AVE and AOP firmware
 ## Replacing Activation Records
 ***[Back to Table of Contents](#table-of-contents)***
 
-Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) on how to replace activation records to activate your device. iPadOS 17 activation records have been tested to work on i(Pad)OS 15.
-<!-- TODO: fix the mess that is these damn gists -->
+Once the device has booted, attempt to set up the device. You'll be met with an error saying "Unable to Activate", this is normal.
+
+1. Clone and enter `SSHRD_Script` with `git clone --recursive https://github.com/verygenericname/SSHRD_Script && cd SSHRD_Script`.
+2. Redo the button combination to enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode).
+3. Run `./sshrd.sh {version}`, where `{version}` is the i(Pad)OS version you restored to (ie. 15.7). If the script hangs on "Getting device info and pwning", restart from step 2. If the script stops on "[-] An error occurred", restart from step 3.
+4. Boot the ramdisk with `./sshrd.sh boot`. Wait for the device to stop moving text on the screen.
+5. Enter SSH with `./sshrd.sh ssh`.
+
+In the SSH terminal, run the following commands:
+
+```bash
+mount_filesystems
+find /mnt2/containers/Data/System -name internal
+```
+
+The second command will return something along the lines of `/mnt2/containers/Data/System/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/Library/internal`. Take off `/Library/internal` at the end and put it into the next command:
+
+```bash
+rm -rf /mnt2/containers/Data/System/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+```
+
+6. Reboot the device by force restarting. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting). Attempt to activate the device again.
+7. Redo the button combination to enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode).
+8. Boot into the ramdisk by running `./sshrd.sh boot`. Wait for the device to stop moving text on the screen.
+9. Enter SSH with `./sshrd.sh ssh`.
+10. Mount filesystems with `mount_filesystems`. Wait until the command finishes.
+11. Run `exit`. Then, run `cd Darwin && killall iproxy && ./iproxy 2222 22 &`.
+12. Run `./iproxy 2222 22 &`.
+
+This terminal tab will be running in the background, you do not need to interact with it!
+
+13. Open a new terminal tab / process and `cd` into the `SSHRD_Script` directory. Then, connect to SSH with `./sshrd.sh ssh`.
+
+This terminal tab will be referred to as the "SSH console".
+
+14. Open a new terminal tab / process.
+
+This terminal tab will be referred to as the "normal console".
+
+***In the normal console:***
+```bash
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 rm -rf /mnt2/mobile/Media/Downloads/1
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 rm -rf /mnt2/mobile/Media/1
+```
+
+***In the SSH console:***
+```bash
+mkdir /mnt2/mobile/Media/Downloads/1
+mkdir /mnt2/mobile/Media/Downloads/1/Activation
+```
+
+***In the normal console (ensure you are in your working directory, and the `Activation` folder with activation records exists in the current directory):***
+```bash
+sshpass -p alpine scp -rP 2222 -o StrictHostKeyChecking=no Activation root@localhost:/mnt2/mobile/Media/Downloads/1
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 mv -f /mnt2/mobile/Media/Downloads/1 /mnt2/mobile/Media
+```
+
+***In the SSH console:***
+```bash
+chown -R mobile:mobile /mnt2/mobile/Media/1
+```
+
+***In the normal console:***
+```bash
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chmod -R 755 /mnt2/mobile/Media/1
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chmod 644 /mnt2/mobile/Media/1/Activation/activation_record.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chmod 644 /mnt2/mobile/Media/1/Activation/data_ark.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chmod 644 /mnt2/mobile/Media/1/Activation/com.apple.commcenter.device_specific_nobackup.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 killall backboardd
+sleep 12
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 mv -f /mnt2/mobile/Media/1/Activation/FairPlay /mnt2/mobile/Library/FairPlay
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chmod 755 /mnt2/mobile/Library/FairPlay
+ACT1=$(sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 find /mnt2/containers/Data/System -name internal)
+ACT2=${ACT1%?????????????????}
+ACT3=$ACT2/Library/internal/data_ark.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chflags nouchg $ACT3
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 mv -f /mnt2/mobile/Media/1/Activation/data_ark.plist $ACT3
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chmod 755 $ACT3
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chflags uchg $ACT3
+ACT4=$ACT2/Library/activation_records
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 mkdir $ACT4
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 mv -f /mnt2/mobile/Media/1/Activation/activation_record.plist $ACT4/activation_record.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chmod 755 $ACT4/activation_record.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chflags uchg $ACT4/activation_record.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chflags nouchg /mnt2/wireless/Library/Preferences/com.apple.commcenter.device_specific_nobackup.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 mv -f /mnt2/mobile/Media/1/Activation/com.apple.commcenter.device_specific_nobackup.plist /mnt2/wireless/Library/Preferences/com.apple.commcenter.device_specific_nobackup.plist
+```
+
+(Ignore any errors related to processes)
+
+***In the SSH console:***
+```bash
+chown root:mobile /mnt2/wireless/Library/Preferences/com.apple.commcenter.device_specific_nobackup.plist
+```
+
+***In the normal console:***
+```bash
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chmod 755 /mnt2/wireless/Library/Preferences/com.apple.commcenter.device_specific_nobackup.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 chflags uchg /mnt2/wireless/Library/Preferences/com.apple.commcenter.device_specific_nobackup.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 launchctl unload /System/Library/LaunchDaemons/com.apple.mobileactivationd.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 launchctl load /System/Library/LaunchDaemons/com.apple.mobileactivationd.plist
+sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldrestart
+```
+
+(Ignore any errors in THESE ***normal console*** commands)
+
+15. Reboot the device by force restarting. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting). Attempt to activate the device again.
 
 ## Known Problems
 ***[Back to Table of Contents](#table-of-contents)***
