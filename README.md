@@ -205,8 +205,8 @@ Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8
 ## Known Caveats
 - As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot.
 - You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes.
-- The microphone may not work; tested with 'Photo Booth'.
-- The camera may not work; tested with 'Voice Memos'.
+- The microphone may not work; tested with 'Voice Memos'.
+- The camera may not work; tested with 'Camera'.
 - The gyroscope may not work (this means the screen won't rotate, and you will need to enable AssistiveTouch and add the screen rotation option to the AssistiveTouch menu; you will use the AssistiveTouch menu to rotate the screen); tested with 'Gyro Racer'.
 - The device will look ***bricked*** after a reboot once you restore. If the device reboots, it enters a kind of 'weird' DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it).
 - Your device may reboot automatically if the device is locked for too long. You can mitigate this by keeping the devices WiFi on at all times. You can install [Fiona](https://julioverne.github.io/debfiles/com.julioverne.fiona_0.1_iphoneos-arm.deb) by julioverne to keep the WiFi on (you will need to run the tweak through [Derootifier](https://github.com/haxi0/Derootifier) to convert the `iphoneos-arm` tweak to `iphoneos-arm64`). You can also install [Reverie](https://paisseon.github.io/debs/lilliana.reverie_0.0.3_iphoneos-arm64.deb) (direct `.deb` link) by Paisseon to put the device into a 'hibernation' mode so the device doesn't automatically reboot; battery usage is significantly lower and doesn't reboot the device. Despite the developers subjectively being shady, these are great tweaks that make the deep sleep issue essentially non-existent on tethered boots.
