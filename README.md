@@ -28,7 +28,7 @@ This guide is assuming you set up your `$PATH` environment variable to contain a
 You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager 64-bit`. You can then follow [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) to figure out what files and directories need to be backed up.
 <!-- TODO -->
 
-You will need an `.shsh2` blob from your device. For simplicity sake, you can use [blobsaver](https://github.com/airsquared/blobsaver) (download and install the `.dmg` from releases). Connect your device, read the ECID from the device, and press "Go". Once finished, take the `.shsh2` with the latest i(Pad)OS version listed from the directory listed (may be `~/Blobs`), copy it to your working directory, and rename it to `shsh.shsh2`.
+You will need an `.shsh2` blob from your device. For simplicity sake, you can use [blobsaver](https://github.com/airsquared/blobsaver) (download and install the `.dmg` from releases). Connect your device, read the ECID from the device, and press "Go". Once finished, take the `.shsh2` with the latest i(Pad)OS version listed from the directory listed (may be `~/Blobs`), copy it to your working directory, and rename it to `shsh.shsh2`. ***You cannot use a blob dumped from your device (aka. an 'onboard' blob)***. Blobs from blobsaver work just fine.
 
 ## Firmware Keys
 In order to restore and boot your device, you need to obtain keys for your devices target versions iBoot, iBEC, iBSS, and LLB. One source `futurerestore` looks to for keys is [The Apple Wiki](https://theapplewiki.com/wiki/Firmware_Keys/15.x), so you can check there for keys. If the link for your device & version combination is red, you will need to do extra work.
@@ -81,15 +81,15 @@ with:
 Firmware keys for J120AP 19H12:
 ```
 
-You can now serve these keys on your `localhost` server.
+You can now serve these keys on your `localhost` server for `futurerestore`.
 <!-- TODO -->
 
 ## Restoring
-Take note of the board configuration of your device. When you're looking at the `.ipsw` list on [ipsw.me](https://ipsw.me/), click the "Device Information" tab and note the `BoardConfig`. For example, the iPad Pro 2 (12.9-inch, WiFi) has a BoardConfig of `J120AP`.
+Take note of the board configuration of your device. When you're looking at the version list on [ipsw.me](https://ipsw.me/), click the "Device Information" tab and note the `BoardConfig`. For example, the iPad Pro 2 (12.9-inch, WiFi) has a BoardConfig of `J120AP`.
 
 1. Get an `.ipsw` of the `15.x` version you want to go down to. You can download this from [ipsw.me](https://ipsw.me/). Once you obtain the `.ipsw`, rename it to `ipsw.ipsw` and copy it to your working directory.
 2. Extract the `.ipsw` with `unzip ipsw.ipsw -d ipsw`.
-3. From the `ipsw` directory, copy the kernel cache. The kernel cache should be at the root of the extracted `ipsw` directory. Copy the kernel cache to your working directory and rename it to `kernelcache`.
+3. From the `ipsw` directory, copy the kernel cache. The kernel cache should be at the root of the extracted `ipsw` directory and named after your device (ie. `kernelcache.release.ipad7` for the `iPad7,x`, a shortened version related to the device identifier). Copy the kernel cache to your working directory and rename it to `kernelcache`.
 4. From the `ipsw` directory, copy the restore ramdisk; you can identify this using the build manifest. You can open `BuildManifest.plist` with TextEdit by either using Finder or `open -e BuildManifest.plist`. Search for "RestoreRamDisk" and look for the second result. Look a couple lines beneath, until you see `<key>Path</key>` under the `RestoreRamDisk` key and dictionaries. The `<string>` underneath the Path key is the name of the restore ramdisk `.dmg`. Copy the `.dmg` with the same name as the `.dmg` in the `<string></string>` to your working directory, and rename it to `restore_ramdisk`.
 5. Extract the ramdisk with `img4 -i restore_ramdisk -o ramdisk.dmg`.
 6. Mount the ramdisk with `mkdir ramdisk && hdiutil attach ramdisk.dmg -mountpoint ramdisk`.
@@ -125,12 +125,12 @@ In `ipsw`, you should locate the largest `.dmg`'s name. For example, the `J120AP
 
 Lastly, you need to reopen `BuildManifest.plist`. Search for `IsFUDFirmware` and look through every results entire dictionary; if the `Path` `<key>` has a `<string>` that shows a file ending in `.im4p`, copy the corresponding files to your working directory. These files are all inside of the `ipsw` directory.
 
-Please refer to the "Firmware Keys" section of this guide to get `ivkey`s. If they are on The Apple Wiki, you may use them here. Otherwise, please follow the Criptam guide in getting the keys. Remember, `ivkey` means the IV concatenated with the Key. If the IV is `123` and the Key is `456`, the `ivkey` is `123456`.
+Please refer to the "Firmware Keys" section of this guide to get `ivkey`'s. If they are on The Apple Wiki, you may use them here. Otherwise, please follow the Criptam guide in getting the keys. Remember, `ivkey` means the IV concatenated with the Key. If the IV is `123` and the Key is `456`, the `ivkey` is `123456`. The keys must be for your exact device and exact i(Pad)OS version you want to go to.
 
 1. Decrypt your `ibss` with `img4 -i ibss -o ibss.dmg -k {ibss ivkey}`, where `{ibss ivkey}` is the `ivkey` for iBSS, just remember to not include the `{}`.
 2. Decrypt your `ibec` with `img4 -i ibec -o ibec.dmg -k {ibec ivkey}`, where `{ibec ivkey}` is the `ivkey` for iBEC, just remember to not include the `{}`.
 
-If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg` in a text editor; you should immediately see "Copyright 2007-2022, Apple Inc." near the top. If the ***entire*** file is gibberish, the keys are invalid.
+If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg` in a text editor; you should immediately see "Copyright 2007-20xx, Apple Inc." near the top. If the ***entire*** file is gibberish, the keys are invalid.
 
 3. Patch iBSS with `iBoot64Patcher ibss.dmg ibss.patched`.
 4. Patch iBEC with the verbose boot argument with `iBoot64Patcher ibec.dmg ibec.patched -b "-v"`.
