@@ -1,29 +1,29 @@
 # Tethered iOS 15 Downgrade Guide
 **Originally written by [@mineek](https://github.com/mineek), modified and updated by [@dleovl](https://github.com/dleovl)** to (theoretically) support every version of i(Pad)OS 15. Please read the guide in its entirety and follow along closely to ensure nothing goes wrong.
 
-This guide was written specifically for iPads running iPadOS 17. While personally untested, devices with i(Pad)OS 16/18 ***should*** work, though [YMMV](https://dictionary.cambridge.org/us/dictionary/english/ymmv). ***SEP MUST BE COMPATIBLE***.
+This guide was written specifically for iPads running iPadOS 17. While personally untested, devices with i(Pad)OS 16/18 ***should*** work, though [YMMV](https://dictionary.cambridge.org/us/dictionary/english/ymmv). This guide assumes SEP is compatible. If not, take a look at ~~hell~~ [`seprmvr64`](https://github.com/mineek/seprmvr64). `seprmvr64` might actually work with some knowledge from here, just not out of the box unfortunately.
 
-Additionally, this guide **does not take into account devices that have kpp**. This guide is for MacOS only, though should be possible with Linux if you know what you're doing.
+Additionally, this guide **does not take into account devices that have kpp** (do any 15 devices even have `kpp`...?). This guide is for MacOS only, though should be 100% possible with Linux if you know what you're doing.
 
-This guide is officially certified as *bootloop free* (assuming you do everything correctly)! Remember, this is a ***tethered boot***, not a dualboot. All data on the device will be ***LOST***.
+This guide is officially certified as **bootloop free** (assuming you do everything correctly, don't ban me for something that's out of my hands)! Remember, this is a ***tethered boot***, not a dualboot. All data on the device will be ***LOST***.
 
 This guide is assuming you set up your `$PATH` environment variable to contain a directory which you have access to and can place binaries into. Please edit `~/.bash_profile` or `~/.zshrc`, whichever exists, to add your working directory into `$PATH`. For example, you can add `export PATH="$PATH:/Users/myusername/Desktop/ios15tether"`.
 
 ## Requirements
-- You will need the Xcode Command Line Tools; these can be installed with `xcode-select --install`
-- [`irecovery`](https://github.com/libimobiledevice/libirecovery) - download archive from releases, extract, and ***run*** the `install-sh` binary located in the archives extracted directory
-- [`futurerestore`](https://github.com/futurerestore/futurerestore) - download `futurerestore-macOS-DEBUG` archive from latest GitHub Actions workflow run, extract, and take the `futurerestore` binary
-- [`gaster`](https://github.com/0x7ff/gaster) - clone repository, run `make`, and take the binary made
-- `pyimg4` - install the latest version of [Python](xhttps://www.python.org/downloads/), then run `pip3 install pyimg4` (you may need to restart your terminal in order to run the command)
-- [`iBoot64patcher`](https://github.com/Cryptiiiic/iBoot64Patcher) - clone repository, run `build.sh`, and take the binary made
-- [`Kernel64patcher`](https://github.com/edwin170/Kernel64Patcher) - clone repository, run `gcc Kernel64Patcher.c -o Kernel64Patcher`, and take the binary made
-- [`img4tool`](https://github.com/tihmstar/img4tool) - download archive from releases, extract, and take the binary located at `{extracted archive directory}/usr/local/bin/img4tool`
-- [`img4`](https://github.com/xerub/img4lib) - ***recursively*** clone repository, run `make -C lzfse && make`, and take the binary made
-- [`ldid`](https://github.com/ProcursusTeam/ldid) - download binary from releases, and rename binary to `ldid`
-- [`restored_external64_patcher`](https://github.com/iSuns9/restored_external64patcher) - clone repository, run `make`, and take the binary made
-- [`asr64_patcher`](https://github.com/iSuns9/asr64_patcher) - clone repository, run `make`, and take the binary made
+- You will need the Xcode Command Line Tools; these can be installed with `xcode-select --install`.
+- [`irecovery`](https://github.com/libimobiledevice/libirecovery) - download archive from releases, extract, and ***run*** the `install-sh` binary located in the archives extracted directory.
+- [`futurerestore`](https://github.com/futurerestore/futurerestore) - download `futurerestore-macOS-DEBUG` archive from latest GitHub Actions workflow run, extract, and take the `futurerestore` binary.
+- [`gaster`](https://github.com/0x7ff/gaster) - clone repository, run `make`, and take the binary made.
+- `pyimg4` - install the latest version of [Python](xhttps://www.python.org/downloads/), then run `pip3 install pyimg4` (you may need to restart your terminal in order to run the command).
+- [`iBoot64patcher`](https://github.com/Cryptiiiic/iBoot64Patcher) - clone repository, run `build.sh`, and take the binary made.
+- [`Kernel64patcher`](https://github.com/edwin170/Kernel64Patcher) - clone repository, run `gcc Kernel64Patcher.c -o Kernel64Patcher`, and take the binary made.
+- [`img4tool`](https://github.com/tihmstar/img4tool) - download archive from releases, extract, and take the binary located at `{extracted archive directory}/usr/local/bin/img4tool`.
+- [`img4`](https://github.com/xerub/img4lib) - ***recursively*** clone repository, run `make -C lzfse && make`, and take the binary made.
+- [`ldid`](https://github.com/ProcursusTeam/ldid) - download binary from releases, and rename binary to `ldid`.
+- [`restored_external64_patcher`](https://github.com/iSuns9/restored_external64patcher) - clone repository, run `make`, and take the binary made.
+- [`asr64_patcher`](https://github.com/iSuns9/asr64_patcher) - clone repository, run `make`, and take the binary made.
 
-***Note: Please make sure you are using the repositories listed above. Using outdated / modified forks / binaries can and will make it so this guide doesn't work.***
+***Note: Please make sure you are using the repositories listed above. Using outdated / modified forks / binaries can and will make it so this guide doesn't work. These tools MUST be under the $PATH environment variable.***
 
 You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager 64-bit`. You can then follow [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) to figure out what files and directories need to be backed up.
 <!-- TODO -->
@@ -33,14 +33,14 @@ You will need an `.shsh2` blob from your device. For simplicity sake, you can us
 ## Firmware Keys
 In order to restore and boot your device, you need to obtain keys for your devices target versions iBoot, iBEC, iBSS, and LLB. One source `futurerestore` looks to for keys is [The Apple Wiki](https://theapplewiki.com/wiki/Firmware_Keys/15.x), so you can check there for keys. If the link for your device & version combination is red, you will need to do extra work.
 
-A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Criptam), though at the time of writing it's broken because [ipsw.me](https://ipsw.me/) is incompetent (~~as always~~). Assuming a fix isn't pushed yet (please check the repository), here's a [fork](https://github.com/dleovl/Criptam) I provided where you can input data via a `.json` file. You can use it like so:
+A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Criptam), though at the time of writing it's broken because [ipsw.me](https://ipsw.me/) is incompetent ~~(as always)~~. Assuming a fix isn't pushed yet (please check the repository), here's a [fork](https://github.com/dleovl/Criptam) I provided where you can input data via a `.json` file. You can use it like so:
 
 1. Install Poetry by running `curl -sSL https://install.python-poetry.org | python3 -`.
 2. Clone the fork mentioned above using `git clone https://github.com/dleovl/Criptam --branch develop`.
 
 Your device identifier can be found by going to [ipsw.me](https://ipsw.me/), selecting your devices model, and clicking the "Device Information" tab. Alternatively, you could refer to this [GitHub Gist](https://gist.github.com/adamawolf/3048717), though pictures may be easier for you. It'll look similar to `iPad7,1`, take a note of this as your identifier.
 
-When you select a version on [ipsw.me](https://ipsw.me/), you will see the build identifier for that version in parenthesis (ie. 19H12 is the build identifier for iPadOS 15.7). Take note of this as the build identifier for the version you want keys of.
+When you select a version on [ipsw.me](https://ipsw.me/), you will see the build identifier for that version in parenthesis (ie. `19H12` is the build identifier for iPadOS 15.7). Take note of this as the build identifier for the version you want keys of.
 
 3. From the repositories main directory, run `./install.sh` to build and install the fork of Criptam.
 
@@ -48,7 +48,7 @@ Now, we need to supply the `fw.json`. You can get this by running `wget https://
 
 Running a command like `wget https://api.ipsw.me/v4/device/iPad7,1 -O fw.json` will give me the firmware data for the iPad Pro 2 (12.9-inch, WiFi).
 
-4. Run the following command: `criptam -d {deviceid} -b {buildid}`, where `{deviceid}` is your device identifier (ie. iPad7,1), and `{buildid}` is the build identifier of the version you want keys of (ie. 19H12 for iPadOS 15.7), just remember to not include the `{}`.
+4. Run the following command: `criptam -d {deviceid} -b {buildid}`, where `{deviceid}` is your device identifier (ie. iPad7,1), and `{buildid}` is the build identifier of the version you want keys of (ie. `19H12` for iPadOS 15.7), just remember to not include the `{}`.
 
 Running a command like `criptam -d iPad7,1 -b 19H12` will give me the keys for the iPad Pro 2 (12.9-inch, WiFi) on iPadOS 15.7.
 
@@ -177,7 +177,7 @@ irecovery -c
 where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`). You can save this as `boot.sh`.
 
 ## Activation
-Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) on how to replace activation records to activate your device. iPadOS 17 activation records have been tested to work on iOS 15.
+Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) on how to replace activation records to activate your device. iPadOS 17 activation records have been tested to work on i(Pad)OS 15.
 <!-- TODO -->
 
 ## Known Caveats
@@ -186,7 +186,7 @@ Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8
 - The microphone may not work.
 - The camera may not work.
 - The gyroscope may not work (this means the screen won't rotate, and you will need to enable AssistiveTouch and add the screen rotation option to the AssistiveTouch menu; you will use the AssistiveTouch menu to rotate the screen).
-- The device will look ***bricked*** after a reboot once you restore. If the device reboots, it enters a kind of 'fake' DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else `gaster pwn` will make your terminal go in a loop.
+- The device will look ***bricked*** after a reboot once you restore. If the device reboots, it enters a kind of 'weird' DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it).
 - Your device may reboot automatically if the device is locked for too long. You can mitigate this by keeping the devices WiFi on at all times. You can install [Fiona](https://julioverne.github.io/debfiles/com.julioverne.fiona_0.1_iphoneos-arm.deb) by julioverne to keep the WiFi on (you will need to run the tweak through [Derootifier](https://github.com/haxi0/Derootifier) to convert the `iphoneos-arm` tweak to `iphoneos-arm64`). You can also install [Reverie](https://paisseon.github.io/debs/lilliana.reverie_0.0.3_iphoneos-arm64.deb) (direct `.deb` link) by Paisseon to put the device into a 'hibernation' mode so the device doesn't automatically reboot; battery usage is significantly lower and doesn't reboot the device. Despite the developers subjectively being shady, these are great tweaks that make the deep sleep issue essentially non-existent on tethered boots.
 
 ## Credits
