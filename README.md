@@ -167,14 +167,36 @@ irecovery -c bootx
 
 If your device has an A10 or above chipset (Google your device name alongside the word "chipset"), replace `{go}` in the command with `irecovery -c go`. If your device is not A10 or above, do not add anything (remove `{go}`).
 
-For `{firmwares}`, you need to send every `IsFUDFirmware` firmware made into an `.img4`. You need to make `{firmwares}` these two lines for ***every*** firmware:
+For `{firmwares}`, you need to send every `IsFUDFirmware` firmware made into an `.img4`. You need to replace `{firmwares}` with these two lines for ***every*** firmware:
 
 ```
 irecovery -f {firmware img4 filename}
 irecovery -c
 ```
 
-where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`). You can save this as `boot.sh`.
+where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`), just don't include the actual `{firmwares}`. You can save this as `boot.sh`. Here's an example of `boot.sh` for the `J120AP` `19E258`:
+
+```
+gaster pwn
+gaster reset
+irecovery -f ibss.img4
+sleep 2
+irecovery -f ibec.img4
+irecovery -c go
+sleep 2
+irecovery -f devicetree.img4
+irecovery -c devicetree
+irecovery -f avefw.img4
+irecovery -c firmware
+irecovery -f aopfw.img4
+irecovery -c firmware
+irecovery -f rootfs_trustcache.img4
+irecovery -c firmware
+irecovery -f krnlboot.img4
+irecovery -c bootx
+```
+
+Since (besides the root filesystem trustcache) there is the AVE and AOP firmware, they've both been added along with their `-c` commands. Since the device is A10X, it includes `-c go`. ***Do not use this script for your device; please only use it as a template***.
 
 ## Activation
 Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) on how to replace activation records to activate your device. iPadOS 17 activation records have been tested to work on i(Pad)OS 15.
@@ -182,10 +204,10 @@ Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8
 
 ## Known Caveats
 - As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot.
-- You cannot set a passcode / enable any biometrics. Your device will panic, though a reboot reverts the changes.
-- The microphone may not work.
-- The camera may not work.
-- The gyroscope may not work (this means the screen won't rotate, and you will need to enable AssistiveTouch and add the screen rotation option to the AssistiveTouch menu; you will use the AssistiveTouch menu to rotate the screen).
+- You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes.
+- The microphone may not work; tested with 'Photo Booth'.
+- The camera may not work; tested with 'Voice Memos'.
+- The gyroscope may not work (this means the screen won't rotate, and you will need to enable AssistiveTouch and add the screen rotation option to the AssistiveTouch menu; you will use the AssistiveTouch menu to rotate the screen); tested with 'Gyro Racer'.
 - The device will look ***bricked*** after a reboot once you restore. If the device reboots, it enters a kind of 'weird' DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it).
 - Your device may reboot automatically if the device is locked for too long. You can mitigate this by keeping the devices WiFi on at all times. You can install [Fiona](https://julioverne.github.io/debfiles/com.julioverne.fiona_0.1_iphoneos-arm.deb) by julioverne to keep the WiFi on (you will need to run the tweak through [Derootifier](https://github.com/haxi0/Derootifier) to convert the `iphoneos-arm` tweak to `iphoneos-arm64`). You can also install [Reverie](https://paisseon.github.io/debs/lilliana.reverie_0.0.3_iphoneos-arm64.deb) (direct `.deb` link) by Paisseon to put the device into a 'hibernation' mode so the device doesn't automatically reboot; battery usage is significantly lower and doesn't reboot the device. Despite the developers subjectively being shady, these are great tweaks that make the deep sleep issue essentially non-existent on tethered boots.
 
