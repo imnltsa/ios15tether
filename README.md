@@ -1,36 +1,53 @@
 # Tethered iOS 15 Downgrade Guide
 **Originally written by [@mineek](https://github.com/mineek), modified and updated by [@dleovl](https://github.com/dleovl)** to (theoretically) support every version of i(Pad)OS 15. Please read the guide in its entirety and follow along closely to ensure nothing goes wrong.
 
-This guide was written specifically for iPads running iPadOS 17. While personally untested, devices with i(Pad)OS 16/18 ***should*** work, though [YMMV](https://dictionary.cambridge.org/us/dictionary/english/ymmv). This guide assumes SEP is compatible. If not, take a look at ~~hell~~ [`seprmvr64`](https://github.com/mineek/seprmvr64). `seprmvr64` might actually work with some knowledge from here, just not out of the box unfortunately.
+This guide was written specifically for iPads running iPadOS 17. While personally untested, devices with i(Pad)OS 16/18 ***should*** work, though [YMMV](https://dictionary.cambridge.org/us/dictionary/english/ymmv) (I doubt the iPhone X will work). This guide assumes SEP is compatible. If not, take a look at ~~hell~~ [`seprmvr64`](https://github.com/mineek/seprmvr64). `seprmvr64` might actually work with some knowledge from here, just not out of the box unfortunately.
 
-Additionally, this guide **does not take into account devices that have kpp** (do any 15 devices even have `kpp`...?). This guide is for MacOS only, though should be 100% possible with Linux if you know what you're doing.
+Additionally, this guide **does not take into account devices that have kpp**; refer to the original guide by [@mineek](https://github.com/mineek) on `kpp`. This guide is for MacOS only, though should be 100% possible with Linux if you know what you're doing.
 
-This guide is officially certified as **bootloop free** (assuming you do everything correctly, don't ban me for something that's out of my hands)! Remember, this is a ***tethered boot***, not a dualboot. All data on the device will be ***LOST***.
+This guide is officially certified as **bootloop free** assuming you do everything correctly, don't ban me for something that's out of my hands! Remember, this is a ***tethered boot***, not a dualboot. All data on the device will be ***LOST*** as a restore takes place.
 
 This guide is assuming you set up your `$PATH` environment variable to contain a directory which you have access to and can place binaries into. Please edit `~/.bash_profile` or `~/.zshrc`, whichever exists, to add your working directory into `$PATH`. For example, you can add `export PATH="$PATH:/Users/myusername/Desktop/ios15tether"`.
 
+## Table of Contents
+- [Requirements](#requirements)
+- [Obtaining Activation Records](#obtaining-activation-records)
+- [Firmware Keys](#firmware-keys)
+- [Restoring](#restoring)
+- [Booting](#booting)
+- [Replacing Activation Records](#replacing-activation-records)
+- [Known Problems](#known-problems)
+- [Credits](#credits)
+
 ## Requirements
+***[Back to Table of Contents](#table-of-contents)***
+
 - You will need the Xcode Command Line Tools; these can be installed with `xcode-select --install`.
 - [`irecovery`](https://github.com/libimobiledevice/libirecovery) - download archive from releases, extract, and ***run*** the `install-sh` binary located in the archives extracted directory.
 - [`futurerestore`](https://github.com/futurerestore/futurerestore) - download `futurerestore-macOS-DEBUG` archive from latest GitHub Actions workflow run, extract, and take the `futurerestore` binary.
 - [`gaster`](https://github.com/0x7ff/gaster) - clone repository, run `make`, and take the binary made.
-- `pyimg4` - install the latest version of [Python](xhttps://www.python.org/downloads/), then run `pip3 install pyimg4` (you may need to restart your terminal in order to run the command).
+- `pyimg4` - install the ***latest version*** of [Python](https://www.python.org/downloads/), then run `pip3 install pyimg4` (you may need to restart your terminal in order to run the command).
 - [`iBoot64patcher`](https://github.com/Cryptiiiic/iBoot64Patcher) - clone repository, run `build.sh`, and take the binary made.
 - [`Kernel64patcher`](https://github.com/edwin170/Kernel64Patcher) - clone repository, run `gcc Kernel64Patcher.c -o Kernel64Patcher`, and take the binary made.
 - [`img4tool`](https://github.com/tihmstar/img4tool) - download archive from releases, extract, and take the binary located at `{extracted archive directory}/usr/local/bin/img4tool`.
 - [`img4`](https://github.com/xerub/img4lib) - ***recursively*** clone repository, run `make -C lzfse && make`, and take the binary made.
 - [`ldid`](https://github.com/ProcursusTeam/ldid) - download binary from releases, and rename binary to `ldid`.
+<!-- TODO: is ProcursusTeam ldid necessary, because this like already exists on MacOS unlike literally every other requirement -->
 - [`restored_external64_patcher`](https://github.com/iSuns9/restored_external64patcher) - clone repository, run `make`, and take the binary made.
 - [`asr64_patcher`](https://github.com/iSuns9/asr64_patcher) - clone repository, run `make`, and take the binary made.
 
 ***Note: Please make sure you are using the repositories listed above. Using outdated / modified forks / binaries can and will make it so this guide doesn't work. These tools MUST be under the $PATH environment variable.***
 
-You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager 64-bit`. You can then follow [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) to figure out what files and directories need to be backed up.
-<!-- TODO -->
+You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager 64-bit`. Then, follow 
 
 You will need an `.shsh2` blob from your device. For simplicity sake, you can use [blobsaver](https://github.com/airsquared/blobsaver) (download and install the `.dmg` from releases). Connect your device, read the ECID from the device, and press "Go". Once finished, take the `.shsh2` with the latest i(Pad)OS version listed from the directory listed (may be `~/Blobs`), copy it to your working directory, and rename it to `shsh.shsh2`. ***You cannot use a blob dumped from your device (aka. an 'onboard' blob)***. Blobs from blobsaver work just fine.
 
+## Obtaining Activation Records
+***[Back to Table of Contents](#table-of-contents)***
+
 ## Firmware Keys
+***[Back to Table of Contents](#table-of-contents)***
+
 In order to restore and boot your device, you need to obtain keys for your devices target versions iBoot, iBEC, iBSS, and LLB. One source `futurerestore` looks to for keys is [The Apple Wiki](https://theapplewiki.com/wiki/Firmware_Keys/15.x), so you can check there for keys. If the link for your device & version combination is red, you will need to do extra work.
 
 A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Criptam), though at the time of writing it's broken because [ipsw.me](https://ipsw.me/) is incompetent ~~(as always)~~. Assuming a fix isn't pushed yet (please check the repository), here's a [fork](https://github.com/dleovl/Criptam) I provided where you can input data via a `.json` file. You can use it like so:
@@ -82,9 +99,11 @@ Firmware keys for J120AP 19H12:
 ```
 
 You can now serve these keys on your `localhost` server for `futurerestore`.
-<!-- TODO -->
+<!-- TODO: set up futurerestore server for restore -->
 
 ## Restoring
+***[Back to Table of Contents](#table-of-contents)***
+
 Take note of the board configuration of your device. When you're looking at the version list on [ipsw.me](https://ipsw.me/), click the "Device Information" tab and note the `BoardConfig`. For example, the iPad Pro 2 (12.9-inch, WiFi) has a BoardConfig of `J120AP`.
 
 1. Get an `.ipsw` of the `15.x` version you want to go down to. You can download this from [ipsw.me](https://ipsw.me/). Once you obtain the `.ipsw`, rename it to `ipsw.ipsw` and copy it to your working directory.
@@ -115,6 +134,8 @@ In order to restore the device, you need to first exploit the device. Put your d
 If your device has a baseband, run `futurerestore -t shsh.shsh2 --use-pwndfu --skip-blob --rdsk ramdisk.im4p --rkrn krnl.im4p --latest-sep --latest-baseband ipsw.ipsw`. If your device does not have baseband, change `--latest-baseband` to `--no-baseband`. If you are unsure whether or not your device has baseband, try the command with `--latest-baseband`; the restore will fail (your data is untouched) if `futurerestore` errors due to your device not having baseband.
 
 ## Booting
+***[Back to Table of Contents](#table-of-contents)***
+
 We need to copy more files from `ipsw`. Some files may be named after your board configuration (ie. `J120AP`), albeit seems like they're cut down in `ipsw/Firmware/dfu` (the files are named with `j120` instead of `J120AP`). Please make sure to get the correct files for your device.
 
 - From `ipsw/Firmware/dfu`, locate `iBEC.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibec`.
@@ -125,12 +146,12 @@ In `ipsw`, you should locate the largest `.dmg`'s name. For example, the `J120AP
 
 Lastly, you need to reopen `BuildManifest.plist`. Search for `IsFUDFirmware` and look through every results entire dictionary; if the `Path` `<key>` has a `<string>` that shows a file ending in `.im4p`, copy the corresponding files to your working directory. These files are all inside of the `ipsw` directory.
 
-Please refer to the "Firmware Keys" section of this guide to get `ivkey`'s. If they are on The Apple Wiki, you may use them here. Otherwise, please follow the Criptam guide in getting the keys. Remember, `ivkey` means the IV concatenated with the Key. If the IV is `123` and the Key is `456`, the `ivkey` is `123456`. The keys must be for your exact device and exact i(Pad)OS version you want to go to.
+Please refer to the [Firmware Keys](#firmware-keys) section of this guide to get `ivkey`'s. If they are on The Apple Wiki, you may use them here. Otherwise, please follow the Criptam guide in getting the keys. Remember, `ivkey` means the IV concatenated with the Key. If the IV is `123` and the Key is `456`, the `ivkey` is `123456`. The keys must be for your exact device and exact i(Pad)OS version you want to go to.
 
 1. Decrypt your `ibss` with `img4 -i ibss -o ibss.dmg -k {ibss ivkey}`, where `{ibss ivkey}` is the `ivkey` for iBSS, just remember to not include the `{}`.
 2. Decrypt your `ibec` with `img4 -i ibec -o ibec.dmg -k {ibec ivkey}`, where `{ibec ivkey}` is the `ivkey` for iBEC, just remember to not include the `{}`.
 
-If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg` in a text editor; you should immediately see "Copyright 2007-20xx, Apple Inc." near the top. If the ***entire*** file is gibberish, the keys are invalid.
+If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg` in a text editor; you should immediately see "Copyright 2007-20xxf, Apple Inc." near the top. If the ***entire*** file is gibberish, the keys are invalid.
 
 3. Patch iBSS with `iBoot64Patcher ibss.dmg ibss.patched`.
 4. Patch iBEC with the verbose boot argument with `iBoot64Patcher ibec.dmg ibec.patched -b "-v"`.
@@ -150,7 +171,7 @@ You're now ready to boot. You can automate the boot process by copying your iBEC
 
 To boot the device, you need to enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode), run `gaster pwn && gaster reset`, and run the following commands (do ***NOT*** run `irecovery -c go` if your device does not have an A10 or higher chipset):
 
-```
+```bash
 irecovery -f ibss.img4
 sleep 2
 irecovery -f ibec.img4
@@ -169,14 +190,14 @@ If your device has an A10 or above chipset (Google your device name alongside th
 
 For `{firmwares}`, you need to send every `IsFUDFirmware` firmware made into an `.img4`. You need to replace `{firmwares}` with these two lines for ***every*** firmware:
 
-```
+```bash
 irecovery -f {firmware img4 filename}
 irecovery -c
 ```
 
 where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`), just don't include the actual `{firmwares}`. You can save this as `boot.sh`. Here's an example of `boot.sh` for the `J120AP` `19E258`:
 
-```
+```bash
 gaster pwn
 gaster reset
 irecovery -f ibss.img4
@@ -198,20 +219,26 @@ irecovery -c bootx
 
 Since (besides the root filesystem trustcache) there is the AVE and AOP firmware, they've both been added along with their `-c` commands. Since the device is A10X, it includes `-c go`. ***Do not use this script for your device; please only use it as a template***.
 
-## Activation
-Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) on how to replace activation records to activate your device. iPadOS 17 activation records have been tested to work on i(Pad)OS 15.
-<!-- TODO -->
+## Replacing Activation Records
+***[Back to Table of Contents](#table-of-contents)***
 
-## Known Caveats
+Refer to [this guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d) on how to replace activation records to activate your device. iPadOS 17 activation records have been tested to work on i(Pad)OS 15.
+<!-- TODO: fix the mess that is these damn gists -->
+
+## Known Problems
+***[Back to Table of Contents](#table-of-contents)***
+
 - As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot.
 - You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes.
 - The microphone may not work; tested with 'Voice Memos'.
 - The camera may not work; tested with 'Camera'.
 - The gyroscope may not work (this means the screen won't rotate, and you will need to enable AssistiveTouch and add the screen rotation option to the AssistiveTouch menu; you will use the AssistiveTouch menu to rotate the screen); tested with 'Gyro Racer'.
 - The device will look ***bricked*** after a reboot once you restore. If the device reboots, it enters a kind of 'weird' DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it).
-- Your device may reboot automatically if the device is locked for too long. You can mitigate this by keeping the devices WiFi on at all times. You can install [Fiona](https://julioverne.github.io/debfiles/com.julioverne.fiona_0.1_iphoneos-arm.deb) by julioverne to keep the WiFi on (you will need to run the tweak through [Derootifier](https://github.com/haxi0/Derootifier) to convert the `iphoneos-arm` tweak to `iphoneos-arm64`). You can also install [Reverie](https://paisseon.github.io/debs/lilliana.reverie_0.0.3_iphoneos-arm64.deb) (direct `.deb` link) by Paisseon to put the device into a 'hibernation' mode so the device doesn't automatically reboot; battery usage is significantly lower and doesn't reboot the device. Despite the developers subjectively being shady, these are great tweaks that make the deep sleep issue essentially non-existent on tethered boots.
+- Your device may reboot automatically if the device is locked for too long. You can mitigate this by keeping the devices WiFi on at all times. You can install [Fiona](https://julioverne.github.io/debfiles/com.julioverne.fiona_0.1_iphoneos-arm.deb) by julioverne to keep the WiFi on (you will need to run the tweak through [Derootifier](https://github.com/haxi0/Derootifier) to convert the `iphoneos-arm` tweak to `iphoneos-arm64`). You can also install [Reverie](https://paisseon.github.io/debs/lilliana.reverie_0.0.3_iphoneos-arm64.deb) (direct `.deb` link) by Paisseon to put the device into a 'hibernation' mode so the device doesn't automatically reboot; battery usage is significantly lower and doesn't reboot the device. Despite the developers of these tweaks subjectively being shady, these are great tweaks that make the deep sleep issue essentially non-existent on tethered boots.
 
 ## Credits
+***[Back to Table of Contents](#table-of-contents)***
+
 - [@mineek](https://github.com/mineek) for writing the original guide and always providing help through my countless skissues
 - [@edwin170](https://github.com/edwin170) for general support
 - [@pwnapplehat](https://github.com/pwnapplehat) for [updating the orangera1n activation records guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d)
