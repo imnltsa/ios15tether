@@ -9,6 +9,8 @@ This guide is officially certified as **bootloop free** assuming you do everythi
 
 This guide is assuming you set up your `$PATH` environment variable to contain a directory which you have access to and can place binaries into. Please edit `~/.bash_profile` or `~/.zshrc`, whichever exists, to add your working directory into `$PATH`. For example, you can add `export PATH="$PATH:/Users/myusername/Desktop/ios15tether"` (replace `/Users/myusername/Desktop/ios15tether` with your working directory; you can determine this by typing `pwd`).
 
+This guide is considered ***complete*** and should work if you follow every instruction with a bit of common sense. If you're aware of what you're doing, and something isn't working right, contact me via Discord ([@dleovl](https://discord.com/users/772340930694611014)).
+
 ## Table of Contents
 - [Requirements](#requirements)
 - [Obtaining Activation Records](#obtaining-activation-records)
@@ -72,7 +74,7 @@ A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Cr
 
 Your device identifier can be found by going to [ipsw.me](https://ipsw.me/), selecting your devices model, and clicking the "Device Information" tab. Alternatively, you could refer to this [GitHub Gist](https://gist.github.com/adamawolf/3048717), though pictures may be easier for you. It'll look similar to `iPad7,1`, take a note of this as your identifier.
 
-When you select a version on [ipsw.me](https://ipsw.me/), you will see the build identifier for that version in parenthesis (ie. `19H12` is the build identifier for iPadOS 15.7). Take note of this as the build identifier for the version you want keys of.
+When you select a version on [ipsw.me](https://ipsw.me/), you will see the build identifier for that version in parenthesis (ie. `19H12` is the build identifier for iPadOS `15.7`). Take note of this as the build identifier for the version you want keys of.
 
 3. From the repositories main directory, run `./install.sh` to build and install the fork of Criptam.
 
@@ -80,9 +82,9 @@ Now, we need to supply the `fw.json`. You can get this by running `wget https://
 
 For example, running a command like `wget https://api.ipsw.me/v4/device/iPad7,1 -O fw.json` will give me the firmware data for the iPad Pro 2 (12.9-inch, WiFi).
 
-4. Run the following command: `criptam -d {deviceid} -b {buildid}`, where `{deviceid}` is your device identifier (ie. iPad7,1), and `{buildid}` is the build identifier of the version you want keys of (ie. `19H12` for iPadOS 15.7), just remember to not include the `{}`.
+4. Run the following command: `criptam -d {deviceid} -b {buildid}`, where `{deviceid}` is your device identifier (ie. iPad7,1), and `{buildid}` is the build identifier of the version you want keys of (ie. `19H12` for iPadOS `15.7`), just remember to not include the `{}`.
 
-For example, running a command like `criptam -d iPad7,1 -b 19H12` will give me the keys for the iPad Pro 2 (12.9-inch, WiFi) on iPadOS 15.7.
+For example, running a command like `criptam -d iPad7,1 -b 19H12` will give me the keys for the iPad Pro 2 (12.9-inch, WiFi) on iPadOS `15.7`.
 
 Take a note of these keys; they will be used to decrypt iBEC and iBSS in the boot process. Though, now we need to set up a server for `futurerestore` to reference for the restore process. Remember, `ivkey` stands for the IV concatenated with the Key; if IV were `123` and the Key were `456` the `ivkey` would be `123456`. Here's a layout of what you should save:
 
@@ -174,7 +176,7 @@ Open the `.json` file and structure it as follows:
 
 - In the `identifier` key, add the device identifier (ie. `iPad7,1`).
 - In the `buildid` key, add the build identifier (ie. `19H12`).
-- In the `codename` key, add the codename for the version you're going to. For iOS 15, you can use [Wikipedia](https://en.wikipedia.org/wiki/IOS_15#Release_history) for codenames (ie. `SkySecuritySydney` for 15.7).
+- In the `codename` key, add the codename for the version you're going to. For iOS 15, you can use [Wikipedia](https://en.wikipedia.org/wiki/IOS_15#Release_history) for codenames (ie. `SkySecuritySydney` for `15.7`).
 
 The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you need to input the `filename` (which is the name of the corresponding file in the `.ipsw`), the `iv` & `key` of the file (which you can get from your results with Criptam).
 
@@ -315,7 +317,7 @@ Once the device has booted, attempt to set up the device. You'll be met with an 
 
 1. Clone and enter `SSHRD_Script` with `git clone --recursive https://github.com/verygenericname/SSHRD_Script && cd SSHRD_Script`.
 2. Redo the button combination to enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode).
-3. Run `./sshrd.sh {version}`, where `{version}` is the i(Pad)OS version you restored to (ie. 15.7). If the script hangs on "Getting device info and pwning", restart from step 2. If the script stops on "[-] An error occurred", restart from step 3.
+3. Run `./sshrd.sh {version}`, where `{version}` is the i(Pad)OS version you restored to (ie. `15.7`). If the script hangs on "Getting device info and pwning", restart from step 2. If the script stops on "[-] An error occurred", restart from step 3.
 4. Boot the ramdisk with `./sshrd.sh boot`. Wait for the device to stop moving text on the screen.
 5. Enter SSH with `./sshrd.sh ssh`.
 
@@ -423,6 +425,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 ***[Back to Table of Contents](#table-of-contents)***
 
 - As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot.
+- Activation records cannot be used twice (ish). While you can activate and use the device, you cannot log in to iCloud (which seemingly renders Sideloadly broken?). You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records.
 - You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes.
 - The microphone may not work; tested with 'Voice Memos'.
 - The camera may not work; tested with 'Camera'.
