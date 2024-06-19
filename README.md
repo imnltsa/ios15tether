@@ -3,13 +3,13 @@
 
 This guide was written specifically for iPads running iPadOS 17. While personally untested, devices with i(Pad)OS 16/18 ***should*** work, though [YMMV](https://dictionary.cambridge.org/us/dictionary/english/ymmv) (I doubt the iPhone X will work). This guide assumes SEP is compatible. If not, take a look at ~~hell~~ [`seprmvr64`](https://github.com/mineek/seprmvr64). `seprmvr64` might actually work with some knowledge from here, just not out of the box unfortunately.
 
-Additionally, this guide **does not take into account devices that have kpp**; refer to the original guide by [@mineek](https://github.com/mineek) on `kpp`. This guide is for MacOS only, though should be 100% possible with Linux if you know what you're doing.
+Additionally, this guide **does not take into account devices that have kpp**; refer to the original guide by [@mineek](https://github.com/mineek) on `kpp`. This guide is for MacOS only, though should be 100% possible with Linux if you know what you're doing. Unsure if it works on Apple Silicon, but ensure you don't use an AMD processor if you're using a Hackintosh. For checkm8, you should use a USB-A to Lightning cable. If your device only has USB-C ports, you can use a USB-C to USB-A adapter; most if not all work.
 
 This guide is officially certified as **bootloop free** assuming you do everything correctly, don't ban me for something that's out of my hands! Remember, this is a ***tethered boot***, not a dualboot. All data on the device will be ***LOST*** as a restore takes place.
 
 This guide is assuming you set up your `$PATH` environment variable to contain a directory which you have access to and can place binaries into. Please edit `~/.bash_profile` or `~/.zshrc`, whichever exists, to add your working directory into `$PATH`. For example, you can add `export PATH="$PATH:/Users/myusername/Desktop/ios15tether"` (replace `/Users/myusername/Desktop/ios15tether` with your working directory; you can determine this by typing `pwd`).
 
-This guide is considered ***complete*** and should work if you follow every instruction with a bit of common sense. If you're aware of what you're doing, and something isn't working right, contact me via Discord ([@dleovl](https://discord.com/users/772340930694611014)).
+This guide is considered ***complete*** and should work if you follow every instruction with a bit of common sense. If you're aware of what you're doing, and something isn't working right, contact me via Discord ([@dleovl](https://discord.com/users/772340930694611014)). Feel free to create a [pull request](https://github.com/dleovl/ios15tether/pulls) if something seems off or is misspelled.
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -36,7 +36,7 @@ This guide is considered ***complete*** and should work if you follow every inst
 - [`restored_external64_patcher`](https://github.com/iSuns9/restored_external64patcher) - clone repository, run `make`, and take the binary made.
 - [`asr64_patcher`](https://github.com/iSuns9/asr64_patcher) - clone repository, run `make`, and take the binary made.
 - [Homebrew](https://brew.sh/) - if you do not already have homebrew on your system, run `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` in a terminal (I'm so sorry for this).
-- [`sshpass`] - if you do not already have `sshpass` on your system, run `brew tap esolitos/ipa && brew install sshpass` in a terminal.
+- `sshpass` - if you do not already have `sshpass` on your system, run `brew tap esolitos/ipa && brew install sshpass` in a terminal.
 
 ***Note: Please make sure you are using the repositories listed above. Using outdated / modified forks / binaries can and will make it so this guide doesn't work. These tools MUST be under the $PATH environment variable.***
 
@@ -45,22 +45,20 @@ You will need an `.shsh2` blob from your device. For simplicity sake, you can us
 ## Obtaining Activation Records
 ***[Back to Table of Contents](#table-of-contents)***
 
-You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager 64-bit` from Sileo / Zebra.
+You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager` from Sileo / Zebra.
 
 1. Open Filza.
 2. Press "Mount points" from the favorites menu (may need to press the star icon).
 3. Open `/var/mobile/Documents` and make a folder named `Activation` (you can favorite this directory for ease of access). Ensure you are doing this on the ***root filesystem***.
-5. Press the search button, select `Root`, and search for `activation_records`. There may be two folders; press the arrow on the one that has `drwxrwxrwx` (make sure the `internal` directory exists next to the `activation_records` directory)
+5. Press the search button, select `Root`, and search for `activation_records`. There may be two folders; press the arrow on the one that has `drwxrwxrwx` (if there is no `drwxrwxrwx`, try the second one; make sure the `internal` directory exists next to the `activation_records` directory)
 6. From `activation_records`, copy `activation_record.plist` to `/var/mobile/Documents/Activation`.
 7. From `internal` (next to `activation_records`), copy `data_ark.plist` to `/var/mobile/Documents/Activation`.
-8. Press the search button, select `Root` and search for `FairPlay`. Press the arrow on the folder, then copy the `FairPlay` directory ***itself*** and copy it to `/var/mobile/Documents/Activation`.
+8. Press the search button, select `Root` and search for `FairPlay` (try the second folder; you should have the structure `FairPlay/iTunes_Control/iTunes/IC-info.sisv`). Press the arrow on the folder, then copy the `FairPlay` directory ***itself*** and copy it to `/var/mobile/Documents/Activation`.
 9. From `/var/wireless/Library/Preferences`, copy `com.apple.commcenter.device_specific_nobackup.plist` to `/var/mobile/Documents/Activation`.
 10. Open `/var/mobile/Documents` and select "Create ZIP" on the `Activation` folder. Hold down the `.zip`, press "Open in", and select "Save to Files".
 11. Upload the `.zip` to your computer by either going to [tmpfiles.org](https://tmpfiles.org/) and opening the download link on your computer or using FTP / SSH / SFTP. Save the `.zip` to your working directory and extract it. Make sure the `Activation` folder is inside of your working directory (if the files spill into your working directory, run `mkdir Activation && cp activation_record.plist com.apple.commcenter.device_specific_nobackup.plist data_ark.plist FairPlay Activation`).
 
 Once the `Activation` folder is on your computer, `chmod` it with `sudo chmod -R 755 Activation` (assuming you're in the directory that has the `Activation` folder).
-
-If you encounter a permission issue, please try changing the Owner and Group of the file / directory and use `NewTerm 3 Beta` from [Chariz](https://chariz.com/) to `sudo cp` the file / directory into the `Activation` directory. If you know what you're doing, and it still doesn't copy, please let me know via Discord ([@dleovl](https://discord.com/users/772340930694611014)) and I'll go through troubleshooting & give more instructions if they still fail to copy.
 
 ## Firmware Keys
 ***[Back to Table of Contents](#table-of-contents)***
@@ -118,7 +116,7 @@ Firmware keys for J120AP 19H12:
 You can now serve these keys on your `localhost` server for `futurerestore`.
 
 1. Install prerequisites with `pip3 install requests pyquery Flask`.
-2. Download `proxy.py` with ***`wget https://raw.githubusercontent.com/dleovl/ios15tether/main/proxy.py`***. Ensure this is run in your working directory.
+2. Download `proxy.py` with `wget https://raw.githubusercontent.com/dleovl/ios15tether/main/proxy.py`. Ensure this is run in your working directory.
 3. In another terminal window, type `python3 proxy.py`.
 
 Now, you need to make the `.json` file for the restore. In your working directory, make a file named `{deviceid}+{buildid}.json`, where `{deviceid}` is the device identifier (ie. `iPad7,1`) and `{buildid}` is the build identifier for the version you're going to (ie. `19H12`), just remember to not include the `{}`. For example, the `iPad7,1` with the `19H12` build identifier should have its `.json` file named `iPad7,1+19H12.json`.
@@ -286,7 +284,7 @@ irecovery -f {firmware img4 filename}
 irecovery -c
 ```
 
-where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`), just don't include the actual `{firmwares}`. You can save this as `boot.sh`. Here's an example of `boot.sh` for the `J120AP` `19E258`:
+where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`), just don't include the actual `{firmwares}`. You can save this as `boot.sh` (make sure to copy all files required too!). Here's an example of `boot.sh` for the `J120AP` `19E258`:
 
 ```bash
 gaster pwn
@@ -317,7 +315,7 @@ Once the device has booted, attempt to set up the device. You'll be met with an 
 
 1. Clone and enter `SSHRD_Script` with `git clone --recursive https://github.com/verygenericname/SSHRD_Script && cd SSHRD_Script`.
 2. Redo the button combination to enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode).
-3. Run `./sshrd.sh {version}`, where `{version}` is the i(Pad)OS version you restored to (ie. `15.7`). If the script hangs on "Getting device info and pwning", restart from step 2. If the script stops on "[-] An error occurred", restart from step 3.
+3. Make a ramdisk by running `./sshrd.sh {version}`, where `{version}` is the i(Pad)OS version you restored to (ie. `15.7`). If the script hangs on "Getting device info and pwning", restart from step 2. If the script stops on "[-] An error occurred", restart from step 3.
 4. Boot the ramdisk with `./sshrd.sh boot`. Wait for the device to stop moving text on the screen.
 5. Enter SSH with `./sshrd.sh ssh`.
 
@@ -417,7 +415,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 launchc
 sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldrestart
 ```
 
-(Ignore any errors in THESE ***normal console*** commands)
+(Ignore any errors related to commands not being found)
 
 15. Reboot the device by force restarting. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting). Attempt to activate the device again.
 
@@ -425,7 +423,8 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 ***[Back to Table of Contents](#table-of-contents)***
 
 - As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot.
-- Activation records cannot be used twice (ish). While you can activate and use the device, you cannot log in to iCloud (which seemingly renders Sideloadly broken?). You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records.
+- Activation records cannot be used twice (ish). While you can activate and use the device, you cannot log in to iCloud. You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records.
+- Sideloadly (and likely all computer related sideloading tools) won't work. You'll unfortunately need to use online services to sideload things like [TrollInstallerX](https://github.com/alfiecg24/TrollInstallerX) or [Dopamine](https://github.com/opa334/Dopamine). Refer to the [TrollStore installation guide](https://ios.cfw.guide/installing-trollstore/) on compatibility with TrollHelperOTA.
 - You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes.
 - The microphone may not work; tested with 'Voice Memos'.
 - The camera may not work; tested with 'Camera'.
