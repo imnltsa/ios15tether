@@ -40,7 +40,7 @@ This guide is considered ***complete*** and should work if you follow every inst
 
 ***Note: Please make sure you are using the repositories listed above. Using outdated / modified forks / binaries can and will make it so this guide doesn't work. These tools MUST be under the $PATH environment variable.***
 
-You will need an `.shsh2` blob from your device. For simplicity sake, you can use [blobsaver](https://github.com/airsquared/blobsaver) (download and install the `.dmg` from releases). Connect your device, read the ECID from the device, and press "Go". Once finished, take the `.shsh2` with the latest i(Pad)OS version listed from the directory listed (may be `~/Blobs`), copy it to your working directory, and rename it to `shsh.shsh2`. ***You cannot use a blob dumped from your device (aka. an 'onboard' blob)***. Blobs from blobsaver work just fine.
+You will need an `.shsh2` blob from your device. For simplicity sake, you can use [blobsaver](https://github.com/airsquared/blobsaver) (download and install the `.dmg` from releases). Connect your device, read the ECID from the device, and press "Go". Once finished, take the `.shsh2` with the latest i(Pad)OS version listed from the directory listed (may be `~/Blobs`), copy it to your working directory, and rename it to `shsh.shsh2`. ***You cannot use a blob dumped from your device (aka. an "onboard" blob)***. Blobs from blobsaver work just fine.
 
 ## Obtaining Activation Records
 ***[Back to Table of Contents](#table-of-contents)***
@@ -225,13 +225,13 @@ If your device has a baseband, run `futurerestore -t shsh.shsh2 --use-pwndfu --s
 ## Booting
 ***[Back to Table of Contents](#table-of-contents)***
 
-We need to copy more files from `extipsw`. Some files may be named after your board configuration (ie. `J120AP`), albeit seems like they're cut down in `ipsw/Firmware/dfu` (the files are named with `j120` instead of `J120AP`). Please make sure to get the correct files for your device.
+We need to copy more files from `extipsw`. Some files may be named after your board configuration (ie. `J120AP`), albeit seems like they're cut down in `extipsw/Firmware/dfu` (the files are named with `j120` instead of `J120AP`). Please make sure to get the correct files for your device.
 
-- From `ipsw/Firmware/dfu`, locate `iBEC.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibec`.
-- From `ipsw/Firmware/dfu`, locate `iBSS.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibss`.
-- From `ipsw/Firmware/all_flash/`, locate `DeviceTree.{boardid}.im4p`, where `{boardid}` is your board configuration without the `{}`. Copy this to your working directory and rename it to `devicetree`.
+- From `extipsw/Firmware/dfu`, locate `iBEC.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibec`.
+- From `extipsw/Firmware/dfu`, locate `iBSS.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibss`.
+- From `extipsw/Firmware/all_flash/`, locate `DeviceTree.{boardid}.im4p`, where `{boardid}` is your board configuration without the `{}`. Copy this to your working directory and rename it to `devicetree`.
 
-In `extipsw`, you should locate the largest `.dmg`'s name. For example, the `J120AP` `19E258` root filesystem `.dmg` is named `078-28735-012.dmg`. From `ipsw/Firmware`, copy the `.trustcache` for the root filesystem `.dmg` (ie. `078-28735-012.dmg.trustcache`) to your working directory and rename it to `rootfs_trustcache`.
+In `extipsw`, you should locate the largest `.dmg`'s name. For example, the `J120AP` `19E258` root filesystem `.dmg` is named `078-28735-012.dmg`. From `extipsw/Firmware`, copy the `.trustcache` for the root filesystem `.dmg` (ie. `078-28735-012.dmg.trustcache`) to your working directory and rename it to `rootfs_trustcache`.
 
 Lastly, you need to reopen `BuildManifest.plist`. Search for `IsFUDFirmware` and look through every results entire dictionary; if the `Path` `<key>` has a `<string>` that shows a file ending in `.im4p`, copy the corresponding files to your working directory. These files are all inside of the `extipsw` directory.
 
@@ -433,12 +433,12 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 TrollStore Helper should now be installed into the Tips app. Open the Tips app and install TrollStore. If Tips doesn't say "Uninstall Persistence Helper", register Tips as a persistence helper.
 
 - You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes.
-- The microphone may not work; tested with 'Voice Memos'.
-- The camera may not work; tested with 'Camera'.
+- The microphone may not work; tested with "Voice Memos".
+- The camera may not work; tested with "Camera".
 - The flashlight may not work; tested with Control Center.
-- The gyroscope may not work (this means the screen won't rotate, and you will need to enable AssistiveTouch and add the screen rotation option to the AssistiveTouch menu; you will use the AssistiveTouch menu to rotate the screen); tested with 'Gyro Racer'.
-- The device will look ***bricked*** after a reboot once you restore. If the device reboots, it enters a kind of 'weird' DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it).
-- Your device may reboot automatically if the device is locked for too long. You can mitigate this by keeping the devices WiFi on at all times. You can install [Fiona](https://julioverne.github.io/debfiles/com.julioverne.fiona_0.1_iphoneos-arm.deb) by julioverne to keep the WiFi on (you will need to run the tweak through [Derootifier](https://github.com/haxi0/Derootifier) to convert the `iphoneos-arm` tweak to `iphoneos-arm64`). You can also install [Reverie](https://paisseon.github.io/debs/lilliana.reverie_0.0.3_iphoneos-arm64.deb) (direct `.deb` link) by Paisseon to put the device into a 'hibernation' mode so the device doesn't automatically reboot; battery usage is significantly lower and doesn't reboot the device. Despite the developers of these tweaks subjectively being shady, these are great tweaks that make the deep sleep issue essentially non-existent on tethered boots. ***You will need to be consistently jailbroken to utilize these tweaks***.
+- The gyroscope may not work (this means the screen won't rotate, and you will need to enable AssistiveTouch and add the screen rotation option to the AssistiveTouch menu; you will use the AssistiveTouch menu to rotate the screen); tested with "Gyro Racer".
+- The device will look ***bricked*** after a reboot once you restore. If the device reboots, it enters a kind of "weird" DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it).
+- Your device may reboot automatically if the device is locked for too long. You can mitigate this by keeping the devices WiFi on at all times. Install [Fiona](https://julioverne.github.io/debfiles/com.julioverne.fiona_0.1_iphoneos-arm.deb) by julioverne to keep the WiFi on (you will need to run the tweak through [Derootifier](https://github.com/haxi0/Derootifier) to convert the `iphoneos-arm` tweak to `iphoneos-arm64`). Optionally, also install [Reverie](https://paisseon.github.io/debs/lilliana.reverie_0.0.3_iphoneos-arm64.deb) (direct `.deb` link) by Paisseon to put the device into a "hibernation" mode so the device doesn't automatically reboot; battery usage is significantly lower and doesn't reboot the device. Despite the developers of these tweaks subjectively being shady, these are great tweaks that make the deep sleep issue essentially non-existent on tethered boots. ***You will need to be consistently jailbroken to utilize these tweaks***.
 
 ## Credits
 ***[Back to Table of Contents](#table-of-contents)***
