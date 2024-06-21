@@ -63,7 +63,9 @@ Once the `Activation` folder is on your computer, `chmod` it with `sudo chmod -R
 ## Firmware Keys
 ***[Back to Table of Contents](#table-of-contents)***
 
-In order to restore and boot your device, you need to obtain keys for your devices target versions iBoot, iBEC, iBSS, and LLB. One source `futurerestore` looks to for keys is [The Apple Wiki](https://theapplewiki.com/wiki/Firmware_Keys/15.x), so you can check there for keys. If the link for your device & version combination is red, you will need to do extra work.
+In order to restore and boot your device, you need to obtain keys for your devices target versions iBoot, iBEC, iBSS, and LLB. One source `futurerestore` looks to for keys is [The Apple Wiki](https://theapplewiki.com/wiki/Firmware_Keys/15.x), so you can check there for keys.
+
+If the link for your device & version combination is blue (and has keys visible when you click it, you can skip to [Restoring](#restoring). If the link for your device & version combination is red, you will need to do extra work, please continue with this section.
 
 A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Criptam), though at the time of writing it's broken. Assuming a fix isn't pushed yet (please check the repository), here's a [fork](https://github.com/dleovl/Criptam) (`develop` branch) I provided where you can input data via a `.json` file. You can use it like so:
 
