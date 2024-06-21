@@ -76,7 +76,7 @@ When you select a version on [ipsw.me](https://ipsw.me/), you will see the build
 
 3. From the repositories main directory, run `./install.sh` to build and install the fork of Criptam.
 
-Now, we need to supply the `fw.json`. You can get this by running `wget https://api.ipsw.me/v4/device/{deviceid} -O fw.json`, where `{deviceid}` is the device identifier of your device (ie. iPad7,1), just remember to not include the `{}`. A file named your device identifier should be saved. Ensure you're `cd`'d into the directory where the `fw.json` fie is saved. Please remember you need to update this file if a new version comes out for your device and you wish to obtain keys for it.
+Now, we need to supply the `fw.json`. You can get this by running `wget https://api.ipsw.me/v4/device/{deviceid} -O fw.json`, where `{deviceid}` is the device identifier of your device (ie. iPad7,1), just remember to not include the `{}`. Ensure you're `cd`'d into the directory where the `fw.json` fie is saved. Please remember you need to update this file if a new version comes out for your device and you wish to obtain keys for it.
 
 For example, running a command like `wget https://api.ipsw.me/v4/device/iPad7,1 -O fw.json` will give me the firmware data for the iPad Pro 2 (12.9-inch, WiFi).
 
