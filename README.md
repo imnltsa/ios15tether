@@ -188,7 +188,7 @@ The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you n
 
 You do ***NOT*** need to fill `SEPFirmware` `iv` or `key`. You do not need to fill any `kbag` keys.
 
-***Please ensure the files you pick are related to your devices `BoardConfig`***.
+***Please ensure the files you pick are related to your devices `BoardConfig`***. If there is an issue (no matching iBEC, iBSS, iBoot, LLB, but there IS matching SEPFirmware), ***please*** contact me on Discord ([@dleovl](https://discord.com/users/772340930694611014)), little misunderstanding on my end is all.
 
 You can now restore, hooray! Don't forget to keep `python3 proxy.py` running.
 
@@ -232,6 +232,8 @@ We need to copy more files from `extipsw`. Some files may be named after your bo
 - From `extipsw/Firmware/dfu`, locate `iBEC.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibec`.
 - From `extipsw/Firmware/dfu`, locate `iBSS.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibss`.
 - From `extipsw/Firmware/all_flash/`, locate `DeviceTree.{boardid}.im4p`, where `{boardid}` is your board configuration without the `{}`. Copy this to your working directory and rename it to `devicetree`.
+
+If there is an issue (no matching iBEC, iBSS, but there IS matching DeviceTree), ***please*** contact me on Discord ([@dleovl](https://discord.com/users/772340930694611014)), little misunderstanding on my end is all.
 
 In `extipsw`, you should locate the largest `.dmg`'s name. For example, the `J120AP` `19E258` root filesystem `.dmg` is named `078-28735-012.dmg`. From `extipsw/Firmware`, copy the `.trustcache` for the root filesystem `.dmg` (ie. `078-28735-012.dmg.trustcache`) to your working directory and rename it to `rootfs_trustcache`.
 
