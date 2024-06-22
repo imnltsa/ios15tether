@@ -48,15 +48,14 @@ You will need an `.shsh2` blob from your device. For simplicity sake, you can us
 You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager` from Sileo / Zebra.
 
 1. Open Filza.
-2. Press "Mount points" from the favorites menu (may need to press the star icon).
-3. Open `/var/mobile/Documents` and make a folder named `Activation` (you can favorite this directory for ease of access). Ensure you are doing this on the ***root filesystem***.
-5. Press the search button, select `Root`, and search for `activation_records`. There may be two folders; press the arrow on the one that has `drwxrwxrwx` (if there is no `drwxrwxrwx`, try the second one; make sure the `internal` directory exists next to the `activation_records` directory)
-6. From `activation_records`, copy `activation_record.plist` to `/var/mobile/Documents/Activation`.
-7. From `internal` (next to `activation_records`), copy `data_ark.plist` to `/var/mobile/Documents/Activation`.
-8. Press the search button, select `Root` and search for `FairPlay` (try the second folder; you should have the structure `FairPlay/iTunes_Control/iTunes/IC-info.sisv`). Press the arrow on the folder, then copy the `FairPlay` directory ***itself*** and copy it to `/var/mobile/Documents/Activation`.
-9. From `/var/wireless/Library/Preferences`, copy `com.apple.commcenter.device_specific_nobackup.plist` to `/var/mobile/Documents/Activation`.
-10. Open `/var/mobile/Documents` and select "Create ZIP" on the `Activation` folder. Hold down the `.zip`, press "Open in", and select "Save to Files".
-11. Upload the `.zip` to your computer by either going to [tmpfiles.org](https://tmpfiles.org/) and opening the download link on your computer or using FTP / SSH / SFTP. Save the `.zip` to your working directory and extract it. Make sure the `Activation` folder is inside of your working directory (if the files spill into your working directory, run `mkdir Activation && cp activation_record.plist com.apple.commcenter.device_specific_nobackup.plist data_ark.plist FairPlay Activation`).
+2. From the ***root filesystem (/)***, open `/var/mobile/Documents` and make a folder named `Activation` (you can favorite this directory for ease of access). Ensure you are doing this on the ***root filesystem***.
+3. Press the search button, select `Root`, and search for `activation_records`. There may be two folders; press the arrow on the one that has `drwxrwxrwx` (if there is no `drwxrwxrwx`, try the second one; make sure the `internal` directory exists next to the `activation_records` directory)
+4. From `activation_records`, copy `activation_record.plist` to `/var/mobile/Documents/Activation`.
+5. From `internal` (next to `activation_records`), copy `data_ark.plist` to `/var/mobile/Documents/Activation`.
+6. Press the search button, select `Root` and search for `FairPlay` (try the second folder; you should have the structure `FairPlay/iTunes_Control/iTunes/IC-info.sisv`). Press the arrow on the folder, then copy the `FairPlay` directory ***itself*** and copy it to `/var/mobile/Documents/Activation`.
+7. From `/var/wireless/Library/Preferences`, copy `com.apple.commcenter.device_specific_nobackup.plist` to `/var/mobile/Documents/Activation`.
+8. Open `/var/mobile/Documents` and select "Create ZIP" on the `Activation` folder. Hold down the `.zip`, press "Open in", and select "Save to Files".
+9. Upload the `.zip` to your computer by either going to [tmpfiles.org](https://tmpfiles.org/) and opening the download link on your computer or using FTP / SSH / SFTP. Save the `.zip` to your working directory and extract it. Make sure the `Activation` folder is inside of your working directory (if the files spill into your working directory, run `mkdir Activation && cp activation_record.plist com.apple.commcenter.device_specific_nobackup.plist data_ark.plist FairPlay Activation`).
 
 Once the `Activation` folder is on your computer, `chmod` it with `sudo chmod -R 755 Activation` (assuming you're in the directory that has the `Activation` folder).
 
