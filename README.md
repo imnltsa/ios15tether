@@ -178,17 +178,20 @@ Open the `.json` file and structure it as follows:
 - In the `buildid` key, add the build identifier (ie. `19H12`).
 - In the `codename` key, add the codename for the version you're going to. For iOS 15, you can use [Wikipedia](https://en.wikipedia.org/wiki/IOS_15#Release_history) for codenames (ie. `SkySecuritySydney` for `15.7`).
 
-The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you need to input the `filename` (which is the name of the corresponding file in the `.ipsw`), the `iv` & `key` of the file (which you can get from your results with Criptam).
+The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you need to input the `filename` (which is the name of the corresponding file in the `.ipsw`), along with the `iv` & `key` of the file (which you can get from your results with Criptam).
 
-- iBEC `.im4p` is located in `extipsw/Firmware/dfu`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
-- iBSS `.im4p` is located in `extipsw/Firmware/dfu`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
-- iBoot `.im4p` is located in `extipsw/Firmware/all_flash`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
-- LLB `.im4p` is located in `extipsw/Firmware/all_flash`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
-- SEPFirmware `.im4p` is located in `extipsw/Firmware/all_flash`, copy the file name corresponding to your `BoardConfig` and paste into `filename`.
+While in your working directory, run this to get the filenames of every component you need:
+```bash
+cp extipsw/Firmware/BuildManifest.plist .
+echo "iBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo "iBoot is: $(awk "/""${boardconfig}""/{x=1}x&&/iBoot[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo "LLB is: $(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo "SEPFirmware is: $(awk "/""${boardconfig}""/{x=1}x&&/sep-firmware[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+```
+where `{ipswurl}` is the URL of your `.ipsw`, and every `{boardconfig}` is the board configuration of your device ***IN LOWERCASE*** (`j120ap` instead of `J120AP`)  (don't forget to leave out the `{}`). Copy the ***FILENAMES*** (ie. `iBEC.j120.RELEASE.im4p` ***NOT*** `Firmware/dfu/iBEC.j120.RELEASE.im4p`) into their corresponding `filename` keys.
 
 You do ***NOT*** need to fill `SEPFirmware` `iv` or `key`. You do not need to fill any `kbag` keys.
-
-***Please ensure the files you pick are related to your devices `BoardConfig`***. If there is an issue (no matching iBEC, iBSS, iBoot, LLB, but there IS matching SEPFirmware), ***please*** contact me on Discord ([@dleovl](https://discord.com/users/772340930694611014)), little misunderstanding on my end is all.
 
 You can now restore, hooray! Don't forget to keep `python3 proxy.py` running.
 
@@ -227,13 +230,18 @@ If your device has a baseband, run `futurerestore -t shsh.shsh2 --use-pwndfu --s
 ## Booting
 ***[Back to Table of Contents](#table-of-contents)***
 
-We need to copy more files from `extipsw`. Some files may be named after your board configuration (ie. `J120AP`), albeit seems like they're cut down in `extipsw/Firmware/dfu` (the files are named with `j120` instead of `J120AP`). Please make sure to get the correct files for your device.
+We need to copy more files from `extipsw`. DeviceTree may be named after your board configuration (ie. `J120AP`), though other components are likely named differently. Please make sure to get the correct files for your device.
 
-- From `extipsw/Firmware/dfu`, locate `iBEC.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibec`.
-- From `extipsw/Firmware/dfu`, locate `iBSS.{boardid}.RELEASE.im4p`, where `{boardid}` is your cut down board configuration without the `{}`. Copy this to your working directory and rename it to `ibss`.
-- From `extipsw/Firmware/all_flash/`, locate `DeviceTree.{boardid}.im4p`, where `{boardid}` is your board configuration without the `{}`. Copy this to your working directory and rename it to `devicetree`.
+While in your working directory, run this to get the filenames of every component you need:
+```bash
+cp extipsw/Firmware/BuildManifest.plist .
+echo "iBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo "DeviceTree is: $(awk "/""${boardconfig}""/{x=1}x&&/DeviceTree[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+```
+where `{ipswurl}` is the URL of your `.ipsw`, and every `{boardconfig}` is the board configuration of your device ***IN LOWERCASE*** (don't forget to leave out the `{}`).
 
-If there is an issue (no matching iBEC, iBSS, but there IS matching DeviceTree), ***please*** contact me on Discord ([@dleovl](https://discord.com/users/772340930694611014)), little misunderstanding on my end is all.
+Copy every file listed to your working directory, though rename the `iBSS` `.im4p` to `ibss`, `iBEC` `.im4p` to `ibec`, and `DeviceTree` `.im4p` to `devicetree`.
 
 In `extipsw`, you should locate the largest `.dmg`'s name. For example, the `J120AP` `19E258` root filesystem `.dmg` is named `078-28735-012.dmg`. From `extipsw/Firmware`, copy the `.trustcache` for the root filesystem `.dmg` (ie. `078-28735-012.dmg.trustcache`) to your working directory and rename it to `rootfs_trustcache`.
 
