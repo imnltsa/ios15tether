@@ -435,7 +435,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 
 - As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot if the device dies or panics.
 - Activation records cannot be used twice (somewhat). While you can activate and use the device, you cannot log in to iCloud. You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records.
-- AltStore / SideStore / Sideloadly etc. ***will not work***. If your device does not support TrollHelperOTA, follow these steps to install TrollStore:
+- AltStore / SideStore / Sideloadly etc. ***will not work*** (this also includes applications installed via `itms-services://`). If your device does not support TrollHelperOTA, follow these steps to install TrollStore:
 
 1. Install [Tips](https://apps.apple.com/us/app/tips/id1069509450) from the App Store.
 2. Boot your ramdisk from the `SSHRD_Script` directory to install TrollStore with `./sshrd.sh {version} TrollStore Tips`, where `{version}` is the i(Pad)OS version you downgraded to, just remember to not include the `{}`. Wait for the installation to finish.
