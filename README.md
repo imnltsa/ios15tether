@@ -317,7 +317,7 @@ irecovery -f krnlboot.img4
 irecovery -c bootx
 ```
 
-Since (besides the root filesystem trustcache) there is the AVE and AOP firmware, they've both been added along with their `-c` commands. Since the device is A10X, it includes `-c go`. ***Do not use this script for your device; please only use it as a template***.
+Since (besides the root filesystem trustcache) there is the AVE and AOP firmware, they've both been added along with their `-c` commands. Since the device is A10X, it includes `-c go`. ***Do not use this script for your device; please only use it as a template***. You need to keep in the `sleep` commands though, and if they are insufficient, make them a few seconds longer.
 
 ## Replacing Activation Records
 ***[Back to Table of Contents](#table-of-contents)***
