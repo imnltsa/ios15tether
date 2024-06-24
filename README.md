@@ -179,16 +179,17 @@ Open the `.json` file and structure it as follows:
 
 The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you need to input the `filename` (which is the name of the corresponding file in the `.ipsw`), along with the `iv` & `key` of the file (which you can get from your results with Criptam).
 
-While in your working directory, run this to get the filenames of every component you need:
+While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU):
 ```bash
 cp extipsw/Firmware/BuildManifest.plist .
+boardconfig=$(echo "$deviceinfo" | awk '/MODEL/ {print $NF}')
 echo "iBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBoot is: $(awk "/""${boardconfig}""/{x=1}x&&/iBoot[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "LLB is: $(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "SEPFirmware is: $(awk "/""${boardconfig}""/{x=1}x&&/sep-firmware[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 ```
-where every `{boardconfig}` is the board configuration of your device ***IN LOWERCASE*** (`j120ap` instead of `J120AP`)  (don't forget to leave out the `{}`). Copy the ***FILENAMES*** (ie. `iBEC.j120.RELEASE.im4p` ***NOT*** `Firmware/dfu/iBEC.j120.RELEASE.im4p`) into their corresponding `filename` keys.
+Copy the ***FILENAMES*** (ie. `iBEC.j120.RELEASE.im4p` ***NOT*** `Firmware/dfu/iBEC.j120.RELEASE.im4p`) into their corresponding `filename` keys.
 
 You do ***NOT*** need to fill `SEPFirmware` `iv` or `key`. You do not need to fill any `kbag` keys.
 
@@ -231,15 +232,14 @@ If your device has a baseband, run `futurerestore -t shsh.shsh2 --use-pwndfu --s
 
 We need to copy more files from `extipsw`. DeviceTree may be named after your board configuration (ie. `J120AP`), though other components are likely named differently. Please make sure to get the correct files for your device.
 
-While in your working directory, run this to get the filenames of every component you need:
+While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU):
 ```bash
 cp extipsw/Firmware/BuildManifest.plist .
+boardconfig=$(echo "$deviceinfo" | awk '/MODEL/ {print $NF}')
 echo "iBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "DeviceTree is: $(awk "/""${boardconfig}""/{x=1}x&&/DeviceTree[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 ```
-where `{ipswurl}` is the URL of your `.ipsw`, and every `{boardconfig}` is the board configuration of your device ***IN LOWERCASE*** (don't forget to leave out the `{}`).
-
 Copy every file listed to your working directory, though rename the `iBSS` `.im4p` to `ibss`, `iBEC` `.im4p` to `ibec`, and `DeviceTree` `.im4p` to `devicetree`.
 
 In `extipsw`, you should locate the largest `.dmg`'s name. For example, the `J120AP` `19E258` root filesystem `.dmg` is named `078-28735-012.dmg`. From `extipsw/Firmware`, copy the `.trustcache` for the root filesystem `.dmg` (ie. `078-28735-012.dmg.trustcache`) to your working directory and rename it to `rootfs_trustcache`.
