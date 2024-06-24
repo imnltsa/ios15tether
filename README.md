@@ -102,13 +102,13 @@ iBoot IV: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 iBoot Key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-A good reminder of the device & version combination is to write the device identifier and build identifier in your note, so you should do something like replacing:
+A good reminder of the device & version combination is to write the device identifier and build identifier in your note, so you should do something like replacing
 
 ```
 Firmware keys:
 ```
 
-with:
+with
 
 ```
 Firmware keys for J120AP 19H12:
@@ -181,13 +181,13 @@ The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you n
 
 While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU):
 ```bash
-cp extipsw/Firmware/BuildManifest.plist .
+cp extipsw/BuildManifest.plist .
 boardconfig=$(echo "$deviceinfo" | awk '/MODEL/ {print $NF}')
-echo "iBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo -e "\niBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBoot is: $(awk "/""${boardconfig}""/{x=1}x&&/iBoot[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "LLB is: $(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
-echo "SEPFirmware is: $(awk "/""${boardconfig}""/{x=1}x&&/sep-firmware[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo -e "SEPFirmware is: $(awk "/""${boardconfig}""/{x=1}x&&/sep-firmware[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)\n"
 ```
 Copy the ***FILENAMES*** (ie. `iBEC.j120.RELEASE.im4p` ***NOT*** `Firmware/dfu/iBEC.j120.RELEASE.im4p`) into their corresponding `filename` keys.
 
@@ -234,11 +234,11 @@ We need to copy more files from `extipsw`. DeviceTree may be named after your bo
 
 While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU):
 ```bash
-cp extipsw/Firmware/BuildManifest.plist .
+cp extipsw/BuildManifest.plist .
 boardconfig=$(echo "$deviceinfo" | awk '/MODEL/ {print $NF}')
-echo "iBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo -e "\niBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
-echo "DeviceTree is: $(awk "/""${boardconfig}""/{x=1}x&&/DeviceTree[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
+echo -e "DeviceTree is: $(awk "/""${boardconfig}""/{x=1}x&&/DeviceTree[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)\n"
 ```
 Copy every file listed to your working directory, though rename the `iBSS` `.im4p` to `ibss`, `iBEC` `.im4p` to `ibec`, and `DeviceTree` `.im4p` to `devicetree`.
 
@@ -251,7 +251,7 @@ Please refer to the [Firmware Keys](#firmware-keys) section of this guide to get
 1. Decrypt your `ibss` with `img4 -i ibss -o ibss.dmg -k {ibss ivkey}`, where `{ibss ivkey}` is the `ivkey` for iBSS, just remember to not include the `{}`.
 2. Decrypt your `ibec` with `img4 -i ibec -o ibec.dmg -k {ibec ivkey}`, where `{ibec ivkey}` is the `ivkey` for iBEC, just remember to not include the `{}`.
 
-If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg` in a text editor; you should immediately see "Copyright 2007-20xxf, Apple Inc." near the top. If the ***entire*** file is gibberish, the keys are invalid.
+If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg` in a text editor; you should immediately see "Copyright 2007-20xx, Apple Inc." near the top. If the ***entire*** file is gibberish, the keys are invalid.
 
 3. Patch iBSS with `iBoot64Patcher ibss.dmg ibss.patched`.
 4. Patch iBEC with the verbose boot argument with `iBoot64Patcher ibec.dmg ibec.patched -b "-v"`.
@@ -343,7 +343,7 @@ The second command will return something along the lines of `/mnt2/containers/Da
 rm -rf /mnt2/containers/Data/System/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
 ```
 
-6. Reboot the device by force restarting. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting). Attempt to activate the device again.
+6. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting). Attempt to activate the device again.
 7. Redo the button combination to enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode).
 8. Boot into the ramdisk by running `./sshrd.sh boot`. Wait for the device to stop moving text on the screen.
 9. Enter SSH with `./sshrd.sh ssh`.
@@ -428,7 +428,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 
 (Ignore any errors related to commands not being found)
 
-15. Reboot the device by force restarting. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting). Attempt to activate the device again.
+15. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting). Attempt to activate the device again.
 
 ## Known Problems
 ***[Back to Table of Contents](#table-of-contents)***
@@ -439,7 +439,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 
 1. Install [Tips](https://apps.apple.com/us/app/tips/id1069509450) from the App Store.
 2. Boot your ramdisk from the `SSHRD_Script` directory to install TrollStore with `./sshrd.sh {version} TrollStore Tips`, where `{version}` is the i(Pad)OS version you downgraded to, just remember to not include the `{}`. Wait for the installation to finish.
-3. Reboot the device by force restarting. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting).
+3. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting).
 
 TrollStore Helper should now be installed into the Tips app. Open the Tips app and install TrollStore. If Tips doesn't say "Uninstall Persistence Helper", register Tips as a persistence helper.
 
