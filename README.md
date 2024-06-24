@@ -263,7 +263,7 @@ If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg
 
 Now, you need to sign every `.im4p` that was copied when you searched `IsFUDFirmware` in the `BuildManifest.plist`. Run `img4 -i {im4p filename} -o {img4 filename} -M IM4M -T {tag}`, where `{im4p filename}` is the filename of one firmwares `.im4p` filename (ie. `aopfw.im4p`), `{img4 filename}` is the filename with `.im4p` replaced with `.img4` (ie. `aopfw.img4`), and `{tag}` is the [`TYPE`](https://theapplewiki.com/index.php?title=TYPE) of the firmware (ie. `aopf`), just remember to not include the `{}`. Make sure you do ***every firmware***.
 
-10. Patch the kernel cache with `Kernel64Patcher kcache.raw krnlboot.patched -f -r -o -e`, make sure you are using the correct fork!
+10. Patch the kernel cache with `Kernel64Patcher kcache.raw krnlboot.patched -b15 -r -o -e`, make sure you are using the correct fork!
 11. Repack the kernel into an `.im4p` with `pyimg4 im4p create -i krnlboot.patched -o krnlbootim4p -f rkrn --lzss`.
 11. Repack the kernel into an `.img4` with `pyimg4 img4 create -p krnlboot.im4p -o krnlboot.img4 -m IM4M`.
 
@@ -295,7 +295,7 @@ irecovery -f {firmware img4 filename}
 irecovery -c
 ```
 
-where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`), just don't include the actual `{firmwares}`. You can save this as `boot.sh` (make sure to copy all files required too!). Here's an example of `boot.sh` for the `J120AP` `19E258`:
+where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`), just don't include the actual `{firmwares}`. You can save this elsewhere as `boot.sh` (make sure to copy all files required too!). Here's an example of `boot.sh` for the `J120AP` `19E258`:
 
 ```bash
 gaster pwn
@@ -337,7 +337,7 @@ mount_filesystems
 find /mnt2/containers/Data/System -name internal
 ```
 
-The second command will return something along the lines of `/mnt2/containers/Data/System/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/Library/internal`. Take off `/Library/internal` at the end and put it into the next command:
+The second command will return something along the lines of `/mnt2/containers/Data/System/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/Library/internal`. Take off `/Library/internal` at the end and put it into the next command (after `rm -rf`):
 
 ```bash
 rm -rf /mnt2/containers/Data/System/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -433,8 +433,8 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 ## Known Problems
 ***[Back to Table of Contents](#table-of-contents)***
 
-- As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot.
-- Activation records cannot be used twice (ish). While you can activate and use the device, you cannot log in to iCloud. You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records.
+- As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot if the device dies or panics.
+- Activation records cannot be used twice (somewhat). While you can activate and use the device, you cannot log in to iCloud. You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records.
 - AltStore / SideStore / Sideloadly etc. ***will not work***. If your device does not support TrollHelperOTA, follow these steps to install TrollStore:
 
 1. Install [Tips](https://apps.apple.com/us/app/tips/id1069509450) from the App Store.
@@ -443,19 +443,14 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 
 TrollStore Helper should now be installed into the Tips app. Open the Tips app and install TrollStore. If Tips doesn't say "Uninstall Persistence Helper", register Tips as a persistence helper.
 
-- You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes.
-- The microphone may not work; tested with "Voice Memos".
-- The camera may not work; tested with "Camera".
-- The flashlight may not work; tested with Control Center.
-- The gyroscope may not work (this means the screen won't rotate, and you will need to enable AssistiveTouch and add the screen rotation option to the AssistiveTouch menu; you will use the AssistiveTouch menu to rotate the screen); tested with "Gyro Racer".
-- The device will look ***bricked*** after a reboot once you restore. If the device reboots, it enters a kind of "weird" DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it).
-- Your device may reboot automatically if the device is locked for too long. You can mitigate this by keeping the devices WiFi on at all times. Install [Fiona](https://julioverne.github.io/debfiles/com.julioverne.fiona_0.1_iphoneos-arm.deb) by julioverne to keep the WiFi on (you will need to run the tweak through [Derootifier](https://github.com/haxi0/Derootifier) to convert the `iphoneos-arm` tweak to `iphoneos-arm64`). Optionally, also install [Reverie](https://paisseon.github.io/debs/lilliana.reverie_0.0.3_iphoneos-arm64.deb) (direct `.deb` link) by Paisseon to put the device into a "hibernation" mode so the device doesn't automatically reboot; battery usage is significantly lower and doesn't reboot the device. Despite the developers of these tweaks subjectively being shady, these are great tweaks that make the deep sleep issue essentially non-existent on tethered boots. ***You will need to be consistently jailbroken to utilize these tweaks***.
-- A tweak that causes SpringBoard to crash may put your device in a respring loop. Hold the Volume Up button while the device is respringing to enter safe mode if this occurs.
+- You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes. If jailbroken, you can install [FakePass](https://repo.alexia.lol/debs/rootless/net.cadoth.fakepass_0.1.5_iphoneos-arm64.deb) (direct `.deb` link), though it will ***only work while jailbroken***. Install the tweak, respring, and attempt to set a passcode in the Settings app. This tweak does not provide real security, though would prompt a potential intruder to restore the device as rebooting simply enters DFU (they cannot boot as they do not have the required files). Please do ***not*** keep sensitive information on the device, even if you are jailbroken 24/7 as either simply forgetting to jailbreak or someone knowing what files are required to boot instantly compromise the security of your device.
+- The device will look ***bricked*** after a reboot once you restore as LLB is unsigned. If the device reboots, it enters a kind of "weird" DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else running `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it). If this for whatever reason bothers you, look into [downr1n](https://github.com/edwin170/downr1n).
+- A tweak that causes SpringBoard to crash ***may*** put your device into a respring loop. Hold the Volume Up button while the device is respringing to enter safe mode if this occurs.
 
 ## Credits
 ***[Back to Table of Contents](#table-of-contents)***
 
-- [@mineek](https://github.com/mineek) for writing the original guide and always providing help through my countless skissues
+- [@mineek](https://github.com/mineek) for writing the original guide and always providing help through my countless skissues (bikers fault)
 - [@edwin170](https://github.com/edwin170) for general support
 - [@pwnapplehat](https://github.com/pwnapplehat) for [updating the orangera1n activation records guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d)
-- All developers & repository owners of the software used in this guide
+- All developers & repository owners of the software used in this guide listed under [Requirements](#requirements) (seriously, thank you.)
