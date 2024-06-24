@@ -188,7 +188,7 @@ echo "iBoot is: $(awk "/""${boardconfig}""/{x=1}x&&/iBoot[.]/{print;exit}" Build
 echo "LLB is: $(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "SEPFirmware is: $(awk "/""${boardconfig}""/{x=1}x&&/sep-firmware[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 ```
-where `{ipswurl}` is the URL of your `.ipsw`, and every `{boardconfig}` is the board configuration of your device ***IN LOWERCASE*** (`j120ap` instead of `J120AP`)  (don't forget to leave out the `{}`). Copy the ***FILENAMES*** (ie. `iBEC.j120.RELEASE.im4p` ***NOT*** `Firmware/dfu/iBEC.j120.RELEASE.im4p`) into their corresponding `filename` keys.
+where every `{boardconfig}` is the board configuration of your device ***IN LOWERCASE*** (`j120ap` instead of `J120AP`)  (don't forget to leave out the `{}`). Copy the ***FILENAMES*** (ie. `iBEC.j120.RELEASE.im4p` ***NOT*** `Firmware/dfu/iBEC.j120.RELEASE.im4p`) into their corresponding `filename` keys.
 
 You do ***NOT*** need to fill `SEPFirmware` `iv` or `key`. You do not need to fill any `kbag` keys.
 
