@@ -261,7 +261,7 @@ If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg
 8. Sign device tree with `img4 -i devicetree -o devicetree.img4 -M IM4M -T rdtr`.
 9. Sign root filesystem trustcache with `img4 -i rootfs_trustcache -o rootfs_trustcache.img4 -M IM4M -T rtsc`.
 
-Now, you need to sign every `.im4p` that was copied when you searched `IsFUDFirmware` in the `BuildManifest.plist`. Run `img4 -i {im4p filename} -o {img4 filename} -M IM4M -T idfk`, where `{im4p filename}` is the filename of one firmwares `.im4p` filename, and `{img4 filename}` is the filename with `.im4p` replaced with `.img4` (ie. `aopfw.im4p` and `aopfw.img4`), just remember to not include the `{}`. Running these commands will make the terminal spit out a four letter code, you should rerun the command for each firmware but replace `idfk` with the four letter code that was outputted for that firmware file. Repeat this entire step for every single firmware file you copied.
+Now, you need to sign every `.im4p` that was copied when you searched `IsFUDFirmware` in the `BuildManifest.plist`. Run `img4 -i {im4p filename} -o {img4 filename} -M IM4M -T {tag}`, where `{im4p filename}` is the filename of one firmwares `.im4p` filename (ie. `aopfw.im4p`), `{img4 filename}` is the filename with `.im4p` replaced with `.img4` (ie. `aopfw.img4`), and `{tag}` is the [`TYPE`](https://theapplewiki.com/index.php?title=TYPE) of the firmware (ie. `aopf`), just remember to not include the `{}`. Make sure you do ***every firmware***.
 
 10. Patch the kernel cache with `Kernel64Patcher kcache.raw krnlboot.patched -f -r -o -e`, make sure you are using the correct fork!
 11. Repack the kernel into an `.im4p` with `pyimg4 im4p create -i krnlboot.patched -o krnlbootim4p -f rkrn --lzss`.
