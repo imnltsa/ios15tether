@@ -182,7 +182,7 @@ The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you n
 While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU):
 ```bash
 cp extipsw/BuildManifest.plist .
-boardconfig=$(echo "$deviceinfo" | awk '/MODEL/ {print $NF}')
+boardconfig=$(irecovery -q | awk '/MODEL/ {print $NF}')
 echo -e "\niBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBoot is: $(awk "/""${boardconfig}""/{x=1}x&&/iBoot[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
@@ -219,7 +219,7 @@ Take note of the board configuration of your device. When you're looking at the 
 17. Turn the ramdisk `.dmg` into an `.im4p` with `pyimg4 im4p create -i ramdisk.dmg -o ramdisk.im4p -f rdsk`.
 18. Extract the kernel cache with `pyimg4 im4p extract -i kernelcache -o kcache.raw`.
 19. Patch the kernel cache with `Kernel64Patcher kcache.raw krnl.patched -f -a`.
-20. Rebuild the kernel cache with `pyimg4 im4p create -i krnl.patched -o krnl.im4p-f rkrn --lzss`.
+20. Rebuild the kernel cache with `pyimg4 im4p create -i krnl.patched -o krnl.im4p -f rkrn --lzss`.
 
 Now that your restore files are prepared, you can restore the device with `futurerestore`.
 
@@ -235,7 +235,7 @@ We need to copy more files from `extipsw`. DeviceTree may be named after your bo
 While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU):
 ```bash
 cp extipsw/BuildManifest.plist .
-boardconfig=$(echo "$deviceinfo" | awk '/MODEL/ {print $NF}')
+boardconfig=$(irecovery -q | awk '/MODEL/ {print $NF}')
 echo -e "\niBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo -e "DeviceTree is: $(awk "/""${boardconfig}""/{x=1}x&&/DeviceTree[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)\n"
