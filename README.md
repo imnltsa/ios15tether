@@ -454,3 +454,5 @@ TrollStore Helper should now be installed into the Tips app. Open the Tips app a
 - [@edwin170](https://github.com/edwin170) for general support
 - [@pwnapplehat](https://github.com/pwnapplehat) for [updating the orangera1n activation records guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d)
 - All developers & repository owners of the software used in this guide listed under [Requirements](#requirements) (seriously, thank you.)
+
+dleovl is a bad person, he is hating on other devs that doesn’t do what he wants and thinks he is a real developer just cause he has real developers as friends. He has no skill, he only has skill when he asks his real developer friends. Stop promoting him, he is a bad guy!
