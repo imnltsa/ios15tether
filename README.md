@@ -9,7 +9,7 @@ This guide is officially certified as **bootloop free** assuming you do everythi
 
 This guide is assuming you set up your `$PATH` environment variable to contain a directory which you have access to and can place binaries into. Please edit `~/.bash_profile` or `~/.zshrc`, whichever exists, to add your working directory into `$PATH`. For example, you can add `export PATH="$PATH:/Users/myusername/Desktop/ios15tether"` (replace `/Users/myusername/Desktop/ios15tether` with your working directory; you can determine this by typing `pwd`).
 
-This guide is considered ***complete*** (in the context of "it just works, I guess") and should work if you follow every instruction with a bit of common sense. If you're aware of what you're doing, and something isn't working right / you have an idea for improvement, ***contact me via Discord ([@dleovl](https://discord.com/users/772340930694611014))***. If this guide seems too much, please consider looking into [downr1n](https://github.com/edwin170/downr1n); the people behind it know what they're doing (this tool does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc.).
+This guide is considered ***complete*** (in the context of "it just works, I guess") and should work if you follow every instruction with a bit of common sense. If you're aware of what you're doing, and something isn't working right / you have an idea for improvement, ***contact me via Discord ([@dleovl](https://discord.com/users/772340930694611014))***. If this guide seems too much, please consider looking into [downr1n](https://github.com/edwin170/downr1n); the people behind it know what they're doing (this tool does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc.). The tool is messy, unorganized, and honestly buggy, though with common sense it works ***just fine***. Hop off Aaron.
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -223,7 +223,7 @@ Take note of the board configuration of your device. When you're looking at the 
 
 Now that your restore files are prepared, you can restore the device with `futurerestore`.
 
-***Optional:*** If you want the device to be in recovery mode instead of DFU on boot (essentially removing the 'fake DFU' from [Known Problems](#known-problems)), you can replace LLB (and likely also RestoreLogo, though I haven't tested with RestoreLogo; following this step as-is will give you recovery mode but it'll just have the backlight, no logo, if you do this contact me via Discord ([@dleovl](https://discord.com/users/772340930694611014))) by updating the `.ipsw` with an LLB signed by your `.shsh2`. In order to do that, run the following commands in your working directory (replace `{ipsw url}` with the `.ipsw` URL of the i(Pad)OS version that your `.shsh2` comes from:
+***Optional:*** If you want the device to be in recovery mode instead of DFU on boot (essentially removing the 'fake DFU' from [Known Problems](#known-problems)), you can replace LLB by updating the `.ipsw` with an LLB signed by your `.shsh2`. In order to do that, run the following commands in your working directory (replace `{ipsw url}` with the `.ipsw` URL of the i(Pad)OS version that your `.shsh2` comes from, just remember to not inculde the `{}`):
 ```bash
 mkdir -p Firmware/all_flash
 cp extipsw/BuildManifest.plist .
@@ -233,6 +233,17 @@ pzb -g "Firmware/all_flash/$(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exi
 cd ../..
 zip -ur ipsw.ipsw Firmware/all_flash/$(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)
 ```
+
+***Optional:*** If you replaced LLB and want the device to have a graphic when the device is in recovery mode instead of the backlight simply being on, you can replace the RestoreLogo by updating the `.ipsw` with a RestoreLogo signed by your `.shsh2`. In order to do that, run the following commands in your working directory (assuming you already did LLB, replace `{ipsw url}` with the `.ipsw` URL of the i(Pad)OS version that your `.shsh2` comes from, replace `{recoverymode}` with the `.im4p` filename of your devices `recoverymode` `.im4p`; if there is only one `recoverymode` `.im4p` in the `.ipsw` (you can use `pzb -l {ipsw url}` to see the contents of the `.ipsw`), use that, otherwise use the `.im4p` related to your screens resolution (ie. `recoverymode@2732~ipad-lightning.im4p` for the iPad Pro 2 (12.9-inch) as it has a 2732 by 2048 resolution (Google it!), just remember to not inculde the `{}`):
+```bash
+boardconfig=$(irecovery -q | awk '/MODEL/ {print $NF}')
+cd Firmware/all_flash
+pzb -g "Firmware/all_flash/{recoverymode}" {ipsw url}
+cd ../..
+zip -ur ipsw.ipsw Firmware/all_flash/{recoverymode}
+```
+
+You can likely add other components like `BatteryLow0` and `BatteryLow1` following the same process above, though I won't be covering those specifically here.
 
 In order to restore the device, you need to first exploit the device with `gaster`. Put your device into [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and run `gaster pwn && gaster reset`. If `gaster` hangs or goes into a loop, redo the combination for entering DFU mode and run the command again.
 
@@ -455,7 +466,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 TrollStore Helper should now be installed into the Tips app. Open the Tips app and install TrollStore. If Tips doesn't say "Uninstall Persistence Helper", register Tips as a persistence helper.
 
 - You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes. If jailbroken, you can install [FakePass](https://repo.alexia.lol/debs/rootless/net.cadoth.fakepass_0.1.5_iphoneos-arm64.deb) (direct `.deb` link), though it will ***only work while jailbroken***. Install the tweak, respring, and attempt to set a passcode in the Settings app. This tweak does not provide real security, though would prompt a potential intruder to restore the device as rebooting simply enters DFU (they cannot boot as they do not have the required files). Please do ***not*** keep sensitive information on the device, even if you are jailbroken 24/7 as either simply forgetting to jailbreak or someone knowing what files are required to boot instantly compromise the security of your device.
-- The device may look ***bricked*** after a reboot once you restore as LLB is unsigned. If the device reboots, it enters a kind of "weird" DFU mode (assuming you didn't replace LLB, otherwise the device is in recovery mode; if you also replace RecoveryLogo and the device shows a logo upon booting, let me know via Discord ([@dleovl](https://discord.com/users/772340930694611014))!). You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else running `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it). If this for whatever reason bothers you, look into [downr1n](https://github.com/edwin170/downr1n) (this tool does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc.).
+- If you didn't replace LLB, the device will look ***bricked*** after a reboot as it's now in a kind of "fake" DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else running `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it). If LLB is replaced, you can use normal DFU helpers like `palera1n -D` or holding the combination, you just don't need to worry about "fake" DFU.
 - A tweak that causes SpringBoard to crash ***may*** put your device into a respring loop. Hold the Volume Up button while the device is respringing to enter safe mode if this occurs.
 
 ## Credits
