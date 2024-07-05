@@ -223,7 +223,18 @@ Take note of the board configuration of your device. When you're looking at the 
 
 Now that your restore files are prepared, you can restore the device with `futurerestore`.
 
-In order to restore the device, you need to first exploit the device. Put your device into [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and run `gaster pwn && gaster reset`. If `gaster` hangs or goes into a loop, redo the combination for entering DFU mode and run the command again.
+***Optional:*** If you want the device to be in recovery mode instead of DFU on boot (essentially removing the 'fake DFU' from [Known Problems](#known-problems), you can replace LLB (and likely also RestoreLogo, though I haven't tested with RestoreLogo; following this step as-is will give you recovery mode but it'll just have the backlight, no logo) by updating the `.ipsw` with an LLB signed by your `.shsh2`. In order to do that, run the following commands in your working directory (replace `{ipsw url}` with the `.ipsw` URL of the i(Pad)OS version that your `.shsh2` comes from:
+```bash
+mkdir -p Firmware/all_flash
+cp extipsw/BuildManifest.plist .
+boardconfig=$(irecovery -q | awk '/MODEL/ {print $NF}')
+cd Firmware/all_flash
+pzb -g "Firmware/all_flash/$(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)" {ipsw url}
+cd ../..
+zip -ur ipsw.ipsw Firmware/all_flash/$(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)
+```
+
+In order to restore the device, you need to first exploit the device with `gaster`. Put your device into [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and run `gaster pwn && gaster reset`. If `gaster` hangs or goes into a loop, redo the combination for entering DFU mode and run the command again.
 
 If your device has a baseband, run `futurerestore -t shsh.shsh2 --use-pwndfu --skip-blob --rdsk ramdisk.im4p --rkrn krnl.im4p --latest-sep --latest-baseband ipsw.ipsw`. If your device does not have baseband, change `--latest-baseband` to `--no-baseband`. If you are unsure whether or not your device has baseband, try the command with `--latest-baseband`; the restore will fail (your data is untouched) if `futurerestore` errors due to your device not having baseband.
 
@@ -444,7 +455,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 TrollStore Helper should now be installed into the Tips app. Open the Tips app and install TrollStore. If Tips doesn't say "Uninstall Persistence Helper", register Tips as a persistence helper.
 
 - You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes. If jailbroken, you can install [FakePass](https://repo.alexia.lol/debs/rootless/net.cadoth.fakepass_0.1.5_iphoneos-arm64.deb) (direct `.deb` link), though it will ***only work while jailbroken***. Install the tweak, respring, and attempt to set a passcode in the Settings app. This tweak does not provide real security, though would prompt a potential intruder to restore the device as rebooting simply enters DFU (they cannot boot as they do not have the required files). Please do ***not*** keep sensitive information on the device, even if you are jailbroken 24/7 as either simply forgetting to jailbreak or someone knowing what files are required to boot instantly compromise the security of your device.
-- The device will look ***bricked*** after a reboot once you restore as LLB is unsigned. If the device reboots, it enters a kind of "weird" DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else running `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it). If this for whatever reason bothers you, look into [downr1n](https://github.com/edwin170/downr1n) (this tool does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc.).
+- The device may look ***bricked*** after a reboot once you restore as LLB is unsigned. If the device reboots, it enters a kind of "weird" DFU mode (assuming you didn't replace LLB, otherwise the device is in recovery mode; if you also replace RecoveryLogo and the device shows a logo upon booting, let me know via Discord ([@dleovl](https://discord.com/users/772340930694611014))!). You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else running `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it). If this for whatever reason bothers you, look into [downr1n](https://github.com/edwin170/downr1n) (this tool does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc.).
 - A tweak that causes SpringBoard to crash ***may*** put your device into a respring loop. Hold the Volume Up button while the device is respringing to enter safe mode if this occurs.
 
 ## Credits
