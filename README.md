@@ -248,13 +248,13 @@ Lastly, you need to reopen `BuildManifest.plist`. Search for `IsFUDFirmware` and
 
 Please refer to the [Firmware Keys](#firmware-keys) section of this guide to get `ivkey`'s. If they are on The Apple Wiki, you may use them here. Otherwise, please follow the Criptam guide in getting the keys. Remember, `ivkey` means the IV concatenated with the Key. If the IV is `123` and the Key is `456`, the `ivkey` is `123456`. The keys must be for your exact device and exact i(Pad)OS version you want to go to.
 
-1. Decrypt your `ibss` with `img4 -i ibss -o ibss.dmg -k {ibss ivkey}`, where `{ibss ivkey}` is the `ivkey` for iBSS, just remember to not include the `{}`.
-2. Decrypt your `ibec` with `img4 -i ibec -o ibec.dmg -k {ibec ivkey}`, where `{ibec ivkey}` is the `ivkey` for iBEC, just remember to not include the `{}`.
+1. Decrypt your `ibss` with `img4 -i ibss -o ibss.dec -k {ibss ivkey}`, where `{ibss ivkey}` is the `ivkey` for iBSS, just remember to not include the `{}`.
+2. Decrypt your `ibec` with `img4 -i ibec -o ibec.dec -k {ibec ivkey}`, where `{ibec ivkey}` is the `ivkey` for iBEC, just remember to not include the `{}`.
 
-If you want to ensure your keys are correct, open either `ibss.dmg` or `ibec.dmg` in a text editor; you should immediately see "Copyright 2007-20xx, Apple Inc." near the top. If the ***entire*** file is gibberish, the keys are invalid.
+If you want to ensure your keys are correct, open either `ibss.dec` or `ibec.dec` in a text editor; you should immediately see "Copyright 2007-20xx, Apple Inc." near the top. If the ***entire*** file is gibberish, the keys are invalid.
 
-3. Patch iBSS with `iBoot64Patcher ibss.dmg ibss.patched`.
-4. Patch iBEC with the verbose boot argument with `iBoot64Patcher ibec.dmg ibec.patched -b "-v"`.
+3. Patch iBSS with `iBoot64Patcher ibss.dec ibss.patched`.
+4. Patch iBEC with the verbose boot argument with `iBoot64Patcher ibec.dec ibec.patched -b "-v"`.
 5. Create an IM4M with `img4tool -e -s shsh.shsh2 -m IM4M`.
 6. Repack iBSS with `img4 -i ibss.patched -o ibss.img4 -M IM4M -A -T ibss`.
 7. Repack iBEC with `img4 -i ibec.patched -o ibec.img4 -M IM4M -A -T ibec`.
