@@ -47,12 +47,12 @@ You will need an `.shsh2` blob from your device. For simplicity sake, you can us
 
 You will need to back up your ***activation records*** in order to activate & use the device (if you're thinking about bypassing, you won't be able to jailbreak the device if you patch AMFI). Before restoring your device, update it to latest, activate the device (get to the home screen), jailbreak it (you can use [`palera1n`](https://ios.cfw.guide/installing-palera1n/)) and install `Filza File Manager` from Sileo / Zebra.
 
-1. Open Filza.
-2. From the ***root filesystem (/)***, open `/var/mobile/Documents` and make a folder named `Activation` (you can favorite this directory for ease of access). Ensure you are doing this on the ***root filesystem***.
-3. Press the search button, select `Root`, and search for `activation_records`. There may be two folders; press the arrow on the one that has `drwxrwxrwx` (if there is no `drwxrwxrwx`, try the second one; make sure the `internal` directory exists next to the `activation_records` directory)
+1. Open Filza. You should be accessing the following files and directories from the root filesystem.
+2. Open `/var/mobile/Documents` and make a folder named `Activation` (you can favorite this directory for ease of access).
+3. Open `/var/containers/Data/System`. Then, open the folder that Filza says is `com.apple.mobileactivationd`. Then, open `Library` (you can favorite this directory for ease of access). 
 4. From `activation_records`, copy `activation_record.plist` to `/var/mobile/Documents/Activation`.
 5. From `internal` (next to `activation_records`), copy `data_ark.plist` to `/var/mobile/Documents/Activation`.
-6. Press the search button, select `Root` and search for `FairPlay` (try the second folder; you should have the structure `FairPlay/iTunes_Control/iTunes/IC-info.sisv`). Press the arrow on the folder, then copy the `FairPlay` directory ***itself*** and copy it to `/var/mobile/Documents/Activation`.
+6. Open `/var/containers/Data/System`. Then, open the folder that Filza says is `com.apple.fairplayd.A2`. Then, open `Documents/Library`. Copy the `FairPlay` folder and paste it into `/var/mobile/Documents/Activation`.
 7. From `/var/wireless/Library/Preferences`, copy `com.apple.commcenter.device_specific_nobackup.plist` to `/var/mobile/Documents/Activation`.
 8. Open `/var/mobile/Documents` and select "Create ZIP" on the `Activation` folder. Hold down the `.zip`, press "Open in", and select "Save to Files".
 9. Upload the `.zip` to your computer by either going to [tmpfiles.org](https://tmpfiles.org/) and opening the download link on your computer or using FTP / SSH / SFTP. Save the `.zip` to your working directory and extract it. Make sure the `Activation` folder is inside of your working directory (if the files spill into your working directory, run `mkdir Activation && cp activation_record.plist com.apple.commcenter.device_specific_nobackup.plist data_ark.plist FairPlay Activation`).
@@ -231,7 +231,7 @@ boardconfig=$(irecovery -q | awk '/MODEL/ {print $NF}')
 cd Firmware/all_flash
 pzb -g "Firmware/all_flash/$(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)" {ipsw url}
 cd ../..
-zip -ur ipsw.ipsw Firmware/all_flash/$(awk "/""${boardconfig}""/{x=1}x&&/LLB[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)
+zip -ur ipsw.ipsw Firmware/all_flash/
 ```
 
 ***Optional:*** If you replaced LLB and want the device to have a graphic when the device is in recovery mode instead of the backlight simply being on, you can replace the RestoreLogo by updating the `.ipsw` with a RestoreLogo signed by your `.shsh2`. In order to do that, run the following commands in your working directory (assuming you already did LLB, replace `{ipsw url}` with the `.ipsw` URL of the i(Pad)OS version that your `.shsh2` comes from, replace `{recoverymode}` with the `.im4p` filename of your devices `recoverymode` `.im4p`; if there is only one `recoverymode` `.im4p` in the `.ipsw` (you can use `pzb -l {ipsw url}` to see the contents of the `.ipsw`), use that, otherwise use the `.im4p` related to your screens resolution (ie. `recoverymode@2732~ipad-lightning.im4p` for the iPad Pro 2 (12.9-inch) as it has a 2732 by 2048 screen resolution (Google yours!), just remember to not include the `{}`):
@@ -240,10 +240,10 @@ boardconfig=$(irecovery -q | awk '/MODEL/ {print $NF}')
 cd Firmware/all_flash
 pzb -g "Firmware/all_flash/{recoverymode}" {ipsw url}
 cd ../..
-zip -ur ipsw.ipsw Firmware/all_flash/{recoverymode}
+zip -ur ipsw.ipsw Firmware/all_flash/
 ```
 
-You can likely add other components like `BatteryLow0` and `BatteryLow1` following the same process above, though I won't be covering those specifically here.
+You can likely add the rest of the firmware payloads from the `.ipsw` following the same process above, though I won't be covering those specifically here since they're less important.
 
 In order to restore the device, you need to first exploit the device with `gaster`. Put your device into [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and run `gaster pwn && gaster reset`. If `gaster` hangs or goes into a loop, redo the combination for entering DFU mode and run the command again.
 
