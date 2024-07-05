@@ -370,7 +370,7 @@ rm -rf /mnt2/containers/Data/System/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
 8. Boot into the ramdisk by running `./sshrd.sh boot`. Wait for the device to stop moving text on the screen.
 9. Enter SSH with `./sshrd.sh ssh`.
 10. Mount filesystems with `mount_filesystems`. Wait until the command finishes.
-11. Run `exit`. Then, run `cd Darwin && killall iproxy && ./iproxy 2222 22 &`.
+11. Run `exit`. Then, run `cd Darwin && killall iproxy && ./iproxy 2222 22 &` (ignore process not found error).
 12. Run `./iproxy 2222 22 &`.
 
 This terminal tab will be running in the background, you do not need to interact with it!
