@@ -460,8 +460,10 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 - AltStore / SideStore / Sideloadly etc. ***will not work*** (this also includes applications installed via `itms-services://`) as you cannot verify applications from "VPN(, DNS,) & Device Management". If your device does not support TrollHelperOTA, follow these steps to install TrollStore:
 
 1. Install [Tips](https://apps.apple.com/us/app/tips/id1069509450) from the App Store.
-2. Boot your ramdisk from the `SSHRD_Script` directory to install TrollStore with `./sshrd.sh {version} TrollStore Tips`, where `{version}` is the i(Pad)OS version you downgraded to, just remember to not include the `{}`. Wait for the installation to finish.
-3. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting).
+2. In the `SSHRD_Script` directory, run `./sshrd.sh {version} TrollStore Tips`, where `{version}` is the i(Pad)OS version you downgraded to, just remember to not include the `{}`.
+3. Boot the new ramdisk with `./sshrd.sh boot`. Wait for the installation to finish.
+4. Remove the TrollStore ramdisk with `./sshrd.sh clean`.
+5. Enter [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and boot the device normally by [Booting](#booting).
 
 TrollStore Helper should now be installed into the Tips app. Open the Tips app and install TrollStore. If Tips doesn't say "Uninstall Persistence Helper", register Tips as a persistence helper.
 
