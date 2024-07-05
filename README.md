@@ -223,7 +223,7 @@ Take note of the board configuration of your device. When you're looking at the 
 
 Now that your restore files are prepared, you can restore the device with `futurerestore`.
 
-***Optional:*** If you want the device to be in recovery mode instead of DFU on boot (essentially removing the 'fake DFU' from [Known Problems](#known-problems), you can replace LLB (and likely also RestoreLogo, though I haven't tested with RestoreLogo; following this step as-is will give you recovery mode but it'll just have the backlight, no logo) by updating the `.ipsw` with an LLB signed by your `.shsh2`. In order to do that, run the following commands in your working directory (replace `{ipsw url}` with the `.ipsw` URL of the i(Pad)OS version that your `.shsh2` comes from:
+***Optional:*** If you want the device to be in recovery mode instead of DFU on boot (essentially removing the 'fake DFU' from [Known Problems](#known-problems)), you can replace LLB (and likely also RestoreLogo, though I haven't tested with RestoreLogo; following this step as-is will give you recovery mode but it'll just have the backlight, no logo, if you do this contact me via Discord ([@dleovl](https://discord.com/users/772340930694611014))) by updating the `.ipsw` with an LLB signed by your `.shsh2`. In order to do that, run the following commands in your working directory (replace `{ipsw url}` with the `.ipsw` URL of the i(Pad)OS version that your `.shsh2` comes from:
 ```bash
 mkdir -p Firmware/all_flash
 cp extipsw/BuildManifest.plist .
