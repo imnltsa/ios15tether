@@ -249,6 +249,8 @@ In order to restore the device, you need to first exploit the device with `gaste
 
 If your device has a baseband, run `futurerestore -t shsh.shsh2 --use-pwndfu --skip-blob --rdsk ramdisk.im4p --rkrn krnl.im4p --latest-sep --latest-baseband ipsw.ipsw`. If your device does not have baseband, change `--latest-baseband` to `--no-baseband`. If you are unsure whether or not your device has baseband, try the command with `--latest-baseband`; the restore will fail (your data is untouched) if `futurerestore` errors due to your device not having baseband.
 
+***Note:*** If keys are available on The Apple Wiki but `futurerestore` is unable to obtain them, look into [`m1stadev/wikiproxy`](https://github.com/m1stadev/wikiproxy).
+
 ## Booting
 ***[Back to Table of Contents](#table-of-contents)***
 
@@ -480,4 +482,8 @@ TrollStore Helper should now be installed into the Tips app. Open the Tips app a
 - [@pwnapplehat](https://github.com/pwnapplehat) for [updating the orangera1n activation records guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d)
 - All developers & repository owners of the software used in this guide listed under [Requirements](#requirements) (seriously, thank you.)
 
+<hr />
+
 dleovl is a bad person, he is hating on other devs that doesn’t do what he wants and thinks he is a real developer just cause he has real developers as friends. He has no skill, he only has skill when he asks his real developer friends. Stop promoting him, he is a bad guy!
+
+\- a pedophile skid who loves 3 year olds
