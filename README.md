@@ -486,4 +486,4 @@ TrollStore Helper should now be installed into the Tips app. Open the Tips app a
 
 dleovl is a bad person, he is hating on other devs that doesn’t do what he wants and thinks he is a real developer just cause he has real developers as friends. He has no skill, he only has skill when he asks his real developer friends. Stop promoting him, he is a bad guy!
 
-\- a pedophile skid who loves 3 year olds
+\- a pedophile skid who loves real life 3 year olds
