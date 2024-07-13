@@ -1,5 +1,5 @@
 # Tethered iOS 15 Downgrade Guide
-**Originally written by [@mineek](https://github.com/mineek) for i(Pad)OS 14, modified and updated by [@dleovl](https://github.com/dleovl)** to (theoretically) support every version of i(Pad)OS 15. Please read the guide in its entirety and follow along closely to ensure nothing goes wrong. This guide does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc. as it uses legitimate activation records. The device is rendered useless without them.
+**Originally written by [@mineek](https://github.com/mineek) for i(Pad)OS 14, modified and updated for simplicity to (theoretically) support every version of i(Pad)OS 15. Please read the guide in its entirety and follow along closely to ensure nothing goes wrong. This guide does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc. as it uses legitimate activation records. The device is rendered useless without them.
 
 This guide was written specifically for iPads running iPadOS 17. While personally untested, devices with i(Pad)OS 16/18 ***should*** work, though [YMMV](https://dictionary.cambridge.org/us/dictionary/english/ymmv) (I doubt the iPhone X will work). This guide assumes SEP is compatible. If not, take a look at ~~hell~~ [`seprmvr64`](https://github.com/mineek/seprmvr64). `seprmvr64` might actually work with some knowledge from here, just not out of the box unfortunately.
 
@@ -9,7 +9,7 @@ This guide is officially certified as **bootloop free** assuming you do everythi
 
 This guide is assuming you set up your `$PATH` environment variable to contain a directory which you have access to and can place binaries into. Please edit `~/.bash_profile` or `~/.zshrc`, whichever exists, to add your working directory into `$PATH`. For example, you can add `export PATH="$PATH:/Users/myusername/Desktop/ios15tether"` (replace `/Users/myusername/Desktop/ios15tether` with your working directory; you can determine this by typing `pwd`).
 
-This guide is considered ***complete*** (in the context of "it just works, I guess") and should work if you follow every instruction with a bit of common sense. If you're aware of what you're doing, and something isn't working right / you have an idea for improvement, ***contact me via Discord ([@dleovl](https://discord.com/users/772340930694611014))***. If this guide seems too much, please consider looking into [downr1n](https://github.com/edwin170/downr1n); the people behind it know what they're doing (this tool does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc.). The tool is messy, unorganized, and honestly buggy, though with common sense it works ***just fine***. Hop off Aaron.
+This guide is considered ***complete*** (in the context of "it just works, I guess") and should work if you follow every instruction with a bit of common sense. If you're aware of what you're doing, and something isn't working right / you have an idea for improvement, please consider making a pull request. If this guide seems too much, please consider looking into [downr1n](https://github.com/edwin170/downr1n); the people behind it know what they're doing (this tool does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc.). The tool is messy, unorganized, and honestly buggy, though with common sense it works ***just fine***. Hop off Aaron.
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -66,10 +66,10 @@ In order to restore and boot your device, you need to obtain keys for your devic
 
 If the link for your device & version combination is blue (and has keys visible when you click it, you can skip to [Restoring](#restoring). If the link for your device & version combination is red, you will need to do extra work, please continue with this section.
 
-A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Criptam), though at the time of writing it's broken. Assuming a fix isn't pushed yet (please check the repository), here's a [fork](https://github.com/dleovl/Criptam) (`develop` branch) I provided where you can input data via a `.json` file. You can use it like so:
+A dead simple software I like to use is [Criptam](https://github.com/m1stadev/Criptam), though at the time of writing it's broken. Assuming a fix isn't pushed yet (please check the repository), here's a [fork](https://github.com/immoonlightsonata/Criptam) (`develop` branch) I provided where you can input data via a `.json` file. You can use it like so:
 
 1. Install Poetry by running `curl -sSL https://install.python-poetry.org | python3 -`.
-2. Clone the fork mentioned above using `git clone https://github.com/dleovl/Criptam --branch develop`.
+2. Clone the fork mentioned above using `git clone https://github.com/immoonlightsonata/Criptam --branch develop`.
 
 Your device identifier can be found by going to [ipsw.me](https://ipsw.me/), selecting your devices model, and clicking the "Device Information" tab. Alternatively, you could refer to this [GitHub Gist](https://gist.github.com/adamawolf/3048717), though pictures may be easier for you. It'll look similar to `iPad7,1`, take a note of this as your identifier.
 
@@ -117,7 +117,7 @@ Firmware keys for J120AP 19H12:
 You can now serve these keys on your `localhost` server for `futurerestore`.
 
 1. Install prerequisites with `pip3 install requests pyquery Flask`.
-2. Download `proxy.py` with `wget https://raw.githubusercontent.com/dleovl/ios15tether/main/proxy.py`. Ensure this is run in your working directory.
+2. Download `proxy.py` with `wget https://raw.githubusercontent.com/immoonlightsonata/ios15tether/main/proxy.py`. Ensure this is run in your working directory.
 3. In another terminal window, type `python3 proxy.py`.
 
 Now, you need to make the `.json` file for the restore. In your working directory, make a file named `{deviceid}+{buildid}.json`, where `{deviceid}` is the device identifier (ie. `iPad7,1`) and `{buildid}` is the build identifier for the version you're going to (ie. `19H12`), just remember to not include the `{}`. For example, the `iPad7,1` with the `19H12` build identifier should have its `.json` file named `iPad7,1+19H12.json`.
