@@ -179,9 +179,9 @@ Open the `.json` file and structure it as follows:
 
 The rest should be quite self explanatory. For iBEC, iBoot, iBSS, and LLB, you need to input the `filename` (which is the name of the corresponding file in the `.ipsw`), along with the `iv` & `key` of the file (which you can get from your results with Criptam).
 
-While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU):
+While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU in order for `irecovery` to work):
 ```bash
-cp extipsw/BuildManifest.plist .
+rm BuildManifest.plist && cp extipsw/BuildManifest.plist .
 boardconfig=$(irecovery -q | awk '/MODEL/ {print $NF}')
 echo -e "\niBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
 echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
@@ -249,22 +249,21 @@ In order to restore the device, you need to first exploit the device with `gaste
 
 If your device has a baseband, run `futurerestore -t shsh.shsh2 --use-pwndfu --skip-blob --rdsk ramdisk.im4p --rkrn krnl.im4p --latest-sep --latest-baseband ipsw.ipsw`. If your device does not have baseband, change `--latest-baseband` to `--no-baseband`. If you are unsure whether or not your device has baseband, try the command with `--latest-baseband`; the restore will fail (your data is untouched) if `futurerestore` errors due to your device not having baseband.
 
-***Note:*** If keys are available on The Apple Wiki but `futurerestore` is unable to obtain them, look into [`m1stadev/wikiproxy`](https://github.com/m1stadev/wikiproxy).
+***Note:*** If keys are available on The Apple Wiki but `futurerestore` is unable to obtain them, look into [`m1stadev/wikiproxy`](https://github.com/m1stadev/wikiproxy). Similar to `proxy.py`, it allows `futurerestore` to reference The Apple Wiki for firmware keys. Ensure `wikiproxy` is running while running `futurerestore` so the keys can be obtained successfully.
 
 ## Booting
 ***[Back to Table of Contents](#table-of-contents)***
 
-We need to copy more files from `extipsw`. DeviceTree may be named after your board configuration (ie. `J120AP`), though other components are likely named differently. Please make sure to get the correct files for your device.
+We need to copy more files from the `extipsw` directory. DeviceTree may be named after your board configuration (ie. `J120AP`), though other components are likely named differently. Please make sure to get the correct files for your device.
 
-While in your working directory, run this to get the filenames of every component you need (your device must be connected in DFU):
+While in your working directory, run this to copy and rename the required components (your device must be connected in DFU in order for `irecovery` to function):
 ```bash
-cp extipsw/BuildManifest.plist .
+rm BuildManifest.plist && cp extipsw/BuildManifest.plist .
 boardconfig=$(irecovery -q | awk '/MODEL/ {print $NF}')
-echo -e "\niBSS is: $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
-echo "iBEC is: $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)"
-echo -e "DeviceTree is: $(awk "/""${boardconfig}""/{x=1}x&&/DeviceTree[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1)\n"
+cp -v $(awk "/""${boardconfig}""/{x=1}x&&/iBSS[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1) ibss
+cp -v $(awk "/""${boardconfig}""/{x=1}x&&/iBEC[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1) ibec
+cp -v $(awk "/""${boardconfig}""/{x=1}x&&/DeviceTree[.]/{print;exit}" BuildManifest.plist | grep '<string>' |cut -d\> -f2 |cut -d\< -f1) devicetree
 ```
-Copy every file listed to your working directory, though rename the `iBSS` `.im4p` to `ibss`, `iBEC` `.im4p` to `ibec`, and `DeviceTree` `.im4p` to `devicetree`.
 
 In `extipsw`, you should locate the largest `.dmg`'s name. For example, the `J120AP` `19E258` root filesystem `.dmg` is named `078-28735-012.dmg`. From `extipsw/Firmware`, copy the `.trustcache` for the root filesystem `.dmg` (ie. `078-28735-012.dmg.trustcache`) to your working directory and rename it to `rootfs_trustcache`.
 
@@ -457,7 +456,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 ## Known Problems
 ***[Back to Table of Contents](#table-of-contents)***
 
-- As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot if the device dies or panics.
+- As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot if the device dies or panics. While stability is essentially perfect, the device can still panic while jailbreaking, so if you intend to jailbreak please do so before you lose access to a computer.
 - Activation records cannot be used twice (somewhat). While you can activate and use the device, you cannot log in to iCloud. You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records.
 - AltStore / SideStore / Sideloadly etc. ***will not work*** (this also includes applications installed via `itms-services://`) as you cannot verify applications from "VPN(, DNS,) & Device Management". If your device does not support TrollHelperOTA, follow these steps to install TrollStore:
 
@@ -469,15 +468,18 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 
 TrollStore Helper should now be installed into the Tips app. Open the Tips app and install TrollStore. If Tips doesn't say "Uninstall Persistence Helper", register Tips as a persistence helper.
 
-- You cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes. If jailbroken, you can install [FakePass](https://repo.alexia.lol/), though it will ***only work while jailbroken***. Install the tweak, respring, and attempt to set a passcode in the Settings app. This tweak does not provide real security, though would prompt a potential intruder to restore the device as rebooting simply enters DFU (they cannot boot as they do not have the required files). Please do ***not*** keep sensitive information on the device, even if you are jailbroken 24/7 as either simply forgetting to jailbreak or someone knowing what files are required to boot instantly compromise the security of your device.
-- If you didn't replace LLB, the device will look ***bricked*** after a reboot as it's now in a kind of "fake" DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter the actual DFU though, else running `gaster pwn` will make your terminal go in a loop (press Ctrl+C to stop it). If LLB is replaced, you can use normal DFU helpers like `palera1n -D` or holding the combination, you just don't need to worry about "fake" DFU. You can turn off the device by holding the force reboot button combination and letting go once the device backlight turns off (assuming LLB is replaced).
-- A tweak that causes SpringBoard to crash ***may*** put your device into a respring loop. Hold the Volume Up button while the device is respringing to enter safe mode if this occurs.
-- You need to open the Messages app to be able to enable Messages in iCloud settings.
+- Currently, you cannot set a passcode / enable any biometrics. Your device will panic if you enable a passcode, though a force reboot reverts the changes. If jailbroken, you can install [FakePass](https://repo.alexia.lol/), though it will ***only work while jailbroken***. Install the tweak, respring, and attempt to set a passcode in the Settings app. This tweak does not provide real security, though would prompt a potential intruder to restore the device as rebooting simply enters DFU (they cannot boot as they do not have the required files). Please do ***not*** keep sensitive information on the device, even if you are jailbroken 24/7 as either simply forgetting to jailbreak or someone knowing what files are required to boot instantly compromise the security of your device.
+- If you didn't replace LLB, the device will look ***bricked*** after a reboot as it's now in a kind of "fake" DFU mode. You will still need to do the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination to enter real DFU, else running `gaster pwn` will make your terminal go in a loop (press `Ctrl + C` to stop `gaster`). If LLB is replaced, you can use normal DFU helpers like `palera1n -D` or holding the [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) button combination, you just don't need to worry about "fake" DFU. You can turn off the device by holding the force reboot button combination and letting go once the device backlight turns off (assuming LLB is replaced).
+- A tweak that causes SpringBoard to crash ***may*** put your device into a respring loop, albeit unlikely. Hold the Volume Up button while the device is respringing to enter safe mode if this occurs (you may need to keep the button held down upwards of 30 seconds).
+- You need have opened the Messages app first to be able to enable Messages in iCloud settings.
+- Cellular service should work, though is untested.
+- The ability to make calls should work, though is untested.
+- The ability to send and receive SMS texts should work, though is untested.
 
 ## Credits
 ***[Back to Table of Contents](#table-of-contents)***
 
-- [@mineek](https://github.com/mineek) for writing the original guide and always providing help through my countless skissues (bikers fault)
-- [@edwin170](https://github.com/edwin170) for general support
-- [@pwnapplehat](https://github.com/pwnapplehat) for [updating the orangera1n activation records guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d)
-- All developers & repository owners of the software used in this guide listed under [Requirements](#requirements) (seriously, thank you.)
+- [@mineek](https://github.com/mineek) for writing the original guide and providing general support concerning this repository.
+- [@edwin170](https://github.com/edwin170) for providing general support concerning this repository.
+- [@pwnapplehat](https://github.com/pwnapplehat) for [updating the orangera1n activation records guide](https://gist.github.com/pwnapplehat/f522987068932101bc84a8e7e056360d).
+- All developers & repository owners of the software used in this guide listed under [Requirements](#requirements).
