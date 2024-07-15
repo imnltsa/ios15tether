@@ -475,6 +475,7 @@ TrollStore Helper should now be installed into the Tips app. Open the Tips app a
 - Cellular service should work, though is untested.
 - The ability to make calls should work, though is untested.
 - The ability to send and receive SMS texts should work, though is untested.
+- You may be unable to view iCloud keychain passwords.
 
 ## Credits
 ***[Back to Table of Contents](#table-of-contents)***
