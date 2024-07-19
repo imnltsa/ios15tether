@@ -476,6 +476,7 @@ TrollStore Helper should now be installed into the Tips app. Open the Tips app a
 - The ability to make calls should work, though is untested.
 - The ability to send and receive SMS texts should work, though is untested.
 - You may be unable to view iCloud keychain passwords.
+- You may be unable to use [Sidecar](https://support.apple.com/en-us/102597).
 
 ## Credits
 ***[Back to Table of Contents](#table-of-contents)***
