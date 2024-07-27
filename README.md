@@ -243,7 +243,7 @@ cd ../..
 zip -ur ipsw.ipsw Firmware/all_flash/
 ```
 
-You can likely add the rest of the firmware payloads from the `.ipsw` following the same process above, though I won't be covering those specifically here since they're less important.
+You can likely add the rest of the firmware payloads from the `.ipsw` following the same process above, though I won't be covering those specifically here since they're less important. From personal experience, it doesn't seem like "BatteryLow" works, and having your device be in a state where the payload would be shown simply results in a bootloop (just charge your device or turn it off). The Apple logo payload being replaced does in fact bring back the Apple logo (can even be seen during userspace reboots).
 
 In order to restore the device, you need to first exploit the device with `gaster`. Put your device into [DFU mode](https://theapplewiki.com/wiki/DFU_Mode) and run `gaster pwn && gaster reset`. If `gaster` hangs or goes into a loop, redo the combination for entering DFU mode and run the command again.
 
