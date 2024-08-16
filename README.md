@@ -1,4 +1,8 @@
 # Tethered iOS 15 Downgrade Guide
+***Note:*** As much as I'd like to delete this, what's shown in this repository has been a *very* thorough learning process that not only I but many others contributed a **lot** of time into (6+ months). For the sake of preservation, this repository will be archived instead of simply deleted. There are likely some ***typos*** and whatnot making certain accessibility oriented commands fail, though anyone with a brain can easily tell what's supposed to be done in order for this to work and I simply don't have the time to perfect everything or cater to idiotic edge cases like I used to.
+
+<hr>
+
 **Originally written by [@mineek](https://github.com/mineek) for i(Pad)OS 14, modified and updated for simplicity** to (theoretically) support every version of i(Pad)OS 15. Please read the guide in its entirety and follow along closely to ensure nothing goes wrong. This guide does not assist with iCloud bypass, activation lock bypass, MDM bypass, etc. as it uses legitimate activation records. The device is rendered useless without them.
 
 This guide was written specifically for iPads running iPadOS 17. While personally untested, devices with i(Pad)OS 16/18 ***should*** work, though [YMMV](https://dictionary.cambridge.org/us/dictionary/english/ymmv) (I doubt the iPhone X will work). This guide assumes SEP is compatible. If not, take a look at ~~hell~~ [`seprmvr64`](https://github.com/mineek/seprmvr64). `seprmvr64` might actually work with some knowledge from here, just not out of the box unfortunately.
@@ -318,9 +322,10 @@ irecovery -f {firmware img4 filename}
 irecovery -c
 ```
 
-where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`), just don't include the actual `{firmwares}`. You can save this elsewhere as `boot.sh` (make sure to copy all files required too!). Here's an example of `boot.sh` for the `J120AP` `19E258`:
+where `{firmware img4 filename}` is the `.img4` filename of the firmware (ie. `aopfw.img4`), just don't include the actual `{firmwares}`. You can save this elsewhere as `boot.sh` (make sure to copy all files required too!). Here's an example of `boot.sh` for the `J120AP` `19E258` with `LLB` and the recovery mode `.im4p` replaced:
 
 ```bash
+palera1n -D # DFU helper (must replace LLB and recoverymode .im4p)
 gaster pwn
 gaster reset
 irecovery -f ibss.img4
@@ -457,7 +462,7 @@ sshpass -p alpine ssh -o StrictHostKeyChecking=no root@localhost -p 2222 ldresta
 ***[Back to Table of Contents](#table-of-contents)***
 
 - As the name suggests, this is a tethered boot. You need access to a computer every time you want to boot if the device dies or panics. While stability is essentially perfect, the device can still panic while jailbreaking, so if you intend to jailbreak please do so before you lose access to a computer.
-- Activation records cannot be used twice (somewhat). While you can activate and use the device, you cannot log in to iCloud. You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records.
+- Activation records cannot be used twice (somewhat). While you can activate and use the device, you cannot log in to iCloud. You need to restore the device to latest, activate the device, back up the new activation records, restore to `15.x`, and add the new activation records. Also, it seems like they expire after a certain amount of time (?), though I'm unsure if it was just a fluke.
 - AltStore / SideStore / Sideloadly etc. ***will not work*** (this also includes applications installed via `itms-services://`) as you cannot verify applications from "VPN(, DNS,) & Device Management". If your device does not support TrollHelperOTA, follow these steps to install TrollStore:
 
 1. Install [Tips](https://apps.apple.com/us/app/tips/id1069509450) from the App Store.
